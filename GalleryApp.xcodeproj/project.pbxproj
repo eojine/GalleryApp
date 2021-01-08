@@ -14,7 +14,6 @@
 		35A1196825A82BF0008C31EA /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 35A1196725A82BF0008C31EA /* Assets.xcassets */; };
 		35A1196B25A82BF0008C31EA /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 35A1196925A82BF0008C31EA /* LaunchScreen.storyboard */; };
 		35A1197625A82BF1008C31EA /* GalleryAppTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35A1197525A82BF1008C31EA /* GalleryAppTests.swift */; };
-		35A1198125A82BF1008C31EA /* GalleryAppUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35A1198025A82BF1008C31EA /* GalleryAppUITests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -47,8 +46,6 @@
 		35A1197525A82BF1008C31EA /* GalleryAppTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GalleryAppTests.swift; sourceTree = "<group>"; };
 		35A1197725A82BF1008C31EA /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		35A1197C25A82BF1008C31EA /* GalleryAppUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = GalleryAppUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		35A1198025A82BF1008C31EA /* GalleryAppUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GalleryAppUITests.swift; sourceTree = "<group>"; };
-		35A1198225A82BF1008C31EA /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -81,7 +78,6 @@
 			children = (
 				35A1195D25A82BED008C31EA /* GalleryApp */,
 				35A1197425A82BF1008C31EA /* GalleryAppTests */,
-				35A1197F25A82BF1008C31EA /* GalleryAppUITests */,
 				35A1195C25A82BED008C31EA /* Products */,
 			);
 			sourceTree = "<group>";
@@ -117,15 +113,6 @@
 				35A1197725A82BF1008C31EA /* Info.plist */,
 			);
 			path = GalleryAppTests;
-			sourceTree = "<group>";
-		};
-		35A1197F25A82BF1008C31EA /* GalleryAppUITests */ = {
-			isa = PBXGroup;
-			children = (
-				35A1198025A82BF1008C31EA /* GalleryAppUITests.swift */,
-				35A1198225A82BF1008C31EA /* Info.plist */,
-			);
-			path = GalleryAppUITests;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -276,7 +263,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				35A1198125A82BF1008C31EA /* GalleryAppUITests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -366,7 +352,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 14.3;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -421,7 +407,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 14.3;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;
