@@ -25,6 +25,9 @@
 		35A11A1C25A85140008C31EA /* Photo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35A11A1B25A85140008C31EA /* Photo.swift */; };
 		35A11A2225A85236008C31EA /* PhotoService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35A11A2125A85236008C31EA /* PhotoService.swift */; };
 		35A11A2825A85277008C31EA /* PhotoEndpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35A11A2725A85277008C31EA /* PhotoEndpoint.swift */; };
+		35A11A4C25A86ED9008C31EA /* ImageCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35A11A4B25A86ED9008C31EA /* ImageCache.swift */; };
+		35A11A5425A87911008C31EA /* Urls.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35A11A5325A87911008C31EA /* Urls.swift */; };
+		35A11A5F25A88DE9008C31EA /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35A11A5E25A88DE9008C31EA /* User.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -68,6 +71,9 @@
 		35A11A1B25A85140008C31EA /* Photo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Photo.swift; sourceTree = "<group>"; };
 		35A11A2125A85236008C31EA /* PhotoService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoService.swift; sourceTree = "<group>"; };
 		35A11A2725A85277008C31EA /* PhotoEndpoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoEndpoint.swift; sourceTree = "<group>"; };
+		35A11A4B25A86ED9008C31EA /* ImageCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageCache.swift; sourceTree = "<group>"; };
+		35A11A5325A87911008C31EA /* Urls.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Urls.swift; sourceTree = "<group>"; };
+		35A11A5E25A88DE9008C31EA /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -159,6 +165,8 @@
 			isa = PBXGroup;
 			children = (
 				35A11A1B25A85140008C31EA /* Photo.swift */,
+				35A11A5325A87911008C31EA /* Urls.swift */,
+				35A11A5E25A88DE9008C31EA /* User.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -200,6 +208,7 @@
 			isa = PBXGroup;
 			children = (
 				35A11A2125A85236008C31EA /* PhotoService.swift */,
+				35A11A4B25A86ED9008C31EA /* ImageCache.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -349,9 +358,12 @@
 				35A119DA25A84623008C31EA /* LoadingTableViewCell.swift in Sources */,
 				35A119FB25A84D4E008C31EA /* NetworkError.swift in Sources */,
 				35A119D325A83DC0008C31EA /* GalleryTableViewCell.swift in Sources */,
+				35A11A5425A87911008C31EA /* Urls.swift in Sources */,
 				35A11A2825A85277008C31EA /* PhotoEndpoint.swift in Sources */,
 				35A11A1C25A85140008C31EA /* Photo.swift in Sources */,
+				35A11A5F25A88DE9008C31EA /* User.swift in Sources */,
 				35A119B725A83B4A008C31EA /* GalleryViewController.swift in Sources */,
+				35A11A4C25A86ED9008C31EA /* ImageCache.swift in Sources */,
 				35A11A0525A84DBD008C31EA /* HTTPMethod.swift in Sources */,
 				35A119F325A84D2F008C31EA /* Requestable.swift in Sources */,
 				35A1195F25A82BED008C31EA /* AppDelegate.swift in Sources */,

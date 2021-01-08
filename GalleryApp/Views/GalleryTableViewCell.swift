@@ -14,9 +14,9 @@ final class GalleryTableViewCell: UITableViewCell {
     @IBOutlet private weak var galleryImageView: UIImageView!
     @IBOutlet private weak var titleLabel: UILabel!
     
-    func configure(title: String, photo: UIImage) {
+    func configure(user: String, photo: UIImage) {
         galleryImageView.image = photo
-        titleLabel.text = title
+        titleLabel.text = user
     }
     
 }

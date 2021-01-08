@@ -13,15 +13,14 @@ final class GalleryViewController: UIViewController {
     
     private var isPaging = false // 현재 페이징중인지 체크
     private var hasNextPage = false // 다음 페이지를 가지는지 체크
-    private let defaultHeight: CGFloat = 44.0
+    private let defaultHeight: CGFloat = 44.0 // LoadingCell 높이
     private let defaultCellCount = 0
     private let loadingCellCount = 1
     private var photos: [Photo] = []
     
-    let imageHeight: [CGFloat?] = [200, 300, 400]
-    
     override func viewDidLoad() {
         super.viewDidLoad()
+        galleryTableView.separatorStyle = .none
         registerXib()
         loadPhotos()
     }
@@ -65,15 +64,6 @@ final class GalleryViewController: UIViewController {
         }
     }
     
-    private func photoHeightForDevice(width: Int, height: Int) -> CGFloat {
-        let deviceWidth = UIScreen.main.bounds.size.width
-        let floatWidth = CGFloat(width), floatHeight = CGFloat(height)
-        let resizedWidth = floatWidth * (deviceWidth / floatWidth)
-        let resizedHeight = resizedWidth * floatHeight / floatWidth
-        
-        return resizedHeight
-    }
-    
 }
 
 extension GalleryViewController: UITableViewDataSource {
@@ -89,13 +79,12 @@ extension GalleryViewController: UITableViewDataSource {
     
     func tableView(_ tableView: UITableView,
                    heightForRowAt indexPath: IndexPath) -> CGFloat {
-        if let height = photos[indexPath.row].height,
-           let width = photos[indexPath.row].width,
-           !isPaging {
-            let cellHeight = photoHeightForDevice(width: width, height: height)
-            return cellHeight
-        }
-        return defaultHeight
+        if isPaging { return defaultHeight }
+        let deviceWidth = Float(UIScreen.main.bounds.size.width)
+        guard let height = photos[indexPath.row]
+                .photoHeightForDevice(deviceWidth) else { return defaultHeight }
+        let cellHeight = CGFloat(height)
+        return cellHeight
     }
     
     func tableView(_ tableView: UITableView,
@@ -120,14 +109,14 @@ extension GalleryViewController: UITableViewDataSource {
             guard let cell = tableView
                     .dequeueReusableCell(withIdentifier: GalleryTableViewCell.identifier,
                                          for: indexPath) as? GalleryTableViewCell,
-                  let title = photos[indexPath.row].id,
+                  let user = photos[indexPath.row].user?.username,
                   let url = photos[indexPath.row].urls?.small
             else { return defaultCell }
             
-            setImage(imageURL: url) { (image) in
+            ImageCache.shared.load(url: url) { loadedImage in
+                guard let image = loadedImage else { return }
                 DispatchQueue.main.async {
-                    cell.configure(title: title,
-                                   photo: image)
+                    cell.configure(user: user, photo: image)
                 }
             }
             
@@ -144,15 +133,6 @@ extension GalleryViewController: UITableViewDataSource {
         }
     }
     
-    private func setImage(imageURL: String, completion: @escaping (UIImage) -> ()) {
-        guard let url = URL(string: imageURL) else { return }
-        DispatchQueue.global().async {
-            guard let data = try? Data(contentsOf: url),
-                  let loadedImage = UIImage(data: data)
-            else { return }
-            completion(loadedImage)
-        }
-    }
 }
 
 extension GalleryViewController: UITableViewDelegate {
