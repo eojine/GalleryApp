@@ -119,8 +119,18 @@ extension GalleryViewController: UITableViewDataSource {
         case .data:
             guard let cell = tableView
                     .dequeueReusableCell(withIdentifier: GalleryTableViewCell.identifier,
-                                         for: indexPath) as? GalleryTableViewCell
+                                         for: indexPath) as? GalleryTableViewCell,
+                  let title = photos[indexPath.row].id,
+                  let url = photos[indexPath.row].urls?.small
             else { return defaultCell }
+            
+            setImage(imageURL: url) { (image) in
+                DispatchQueue.main.async {
+                    cell.configure(title: title,
+                                   photo: image)
+                }
+            }
+            
             return cell
         case .loading:
             guard let cell = tableView
@@ -134,6 +144,15 @@ extension GalleryViewController: UITableViewDataSource {
         }
     }
     
+    private func setImage(imageURL: String, completion: @escaping (UIImage) -> ()) {
+        guard let url = URL(string: imageURL) else { return }
+        DispatchQueue.global().async {
+            guard let data = try? Data(contentsOf: url),
+                  let loadedImage = UIImage(data: data)
+            else { return }
+            completion(loadedImage)
+        }
+    }
 }
 
 extension GalleryViewController: UITableViewDelegate {

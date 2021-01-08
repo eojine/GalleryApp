@@ -18,13 +18,13 @@ struct Photo: Codable {
     let likes: Int?
     let likedByUser: Bool?
     let description: String?
+    let urls: Urls?
 //    let user: User?
 //    let currentUserCollections: [Current_user_collections]?
-//    let urls: Urls?
 //    let links: Links?
     
     enum CodingKeys: String, CodingKey {
-        case id, width, height, color, likes, description
+        case id, width, height, color, likes, description, urls
         case createdAt = "created_at"
         case updatedAt = "updated_at"
         case blurHash = "blur_hash"
@@ -32,4 +32,8 @@ struct Photo: Codable {
 //        case currentUserCollections = "current_user_collections"
     }
     
+}
+
+struct Urls: Codable {
+    let small: String?
 }
