@@ -5,4 +5,6 @@
 //  Created by Eojin Yang on 2021/01/08.
 //
 
-import Foundation
+enum HTTPMethod: String {
+    case GET
+}
