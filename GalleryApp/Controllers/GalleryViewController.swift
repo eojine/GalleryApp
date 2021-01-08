@@ -20,9 +20,14 @@ final class GalleryViewController: UIViewController {
     }
     
     private func registerXib() {
-        let nibName = UINib(nibName: GalleryTableViewCell.identifier,
-                            bundle: nil)
-        galleryTableView.register(nibName,
+        let cellNibName = UINib(nibName: GalleryTableViewCell.identifier,
+                                bundle: nil)
+        let loadingNibName = UINib(nibName: LoadingTableViewCell.identifier,
+                                   bundle: nil)
+        
+        galleryTableView.register(cellNibName,
+                                  forCellReuseIdentifier: GalleryTableViewCell.identifier)
+        galleryTableView.register(loadingNibName,
                                   forCellReuseIdentifier: GalleryTableViewCell.identifier)
     }
     
