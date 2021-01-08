@@ -44,6 +44,10 @@ final class GalleryViewController: UIViewController {
             switch result {
             case .success(let photos):
                 self.photos = photos
+                DispatchQueue.main.async { [weak self] in
+                    guard let self = self else { return }
+                    self.galleryTableView.reloadData()
+                }
             case .failure(let error):
                 switch error {
                 case .invalidURL:
@@ -61,6 +65,15 @@ final class GalleryViewController: UIViewController {
         }
     }
     
+    private func photoHeightForDevice(width: Int, height: Int) -> CGFloat {
+        let deviceWidth = UIScreen.main.bounds.size.width
+        let floatWidth = CGFloat(width), floatHeight = CGFloat(height)
+        let resizedWidth = floatWidth * (deviceWidth / floatWidth)
+        let resizedHeight = resizedWidth * floatHeight / floatWidth
+        
+        return resizedHeight
+    }
+    
 }
 
 extension GalleryViewController: UITableViewDataSource {
@@ -76,8 +89,11 @@ extension GalleryViewController: UITableViewDataSource {
     
     func tableView(_ tableView: UITableView,
                    heightForRowAt indexPath: IndexPath) -> CGFloat {
-        if let height = imageHeight[indexPath.row], !isPaging {
-            return height
+        if let height = photos[indexPath.row].height,
+           let width = photos[indexPath.row].width,
+           !isPaging {
+            let cellHeight = photoHeightForDevice(width: width, height: height)
+            return cellHeight
         }
         return defaultHeight
     }
@@ -87,7 +103,7 @@ extension GalleryViewController: UITableViewDataSource {
         let section = Section(rawValue: section)
         switch section {
         case .data:
-            return imageHeight.count
+            return photos.count
         case .loading where isPaging && hasNextPage:
             return loadingCellCount
         default:
