@@ -6,3 +6,24 @@
 //
 
 import Foundation
+
+enum PhotoEndpoint {
+    case get
+}
+
+extension PhotoEndpoint: EndpointType {
+    var path: String {
+        switch self {
+        case .get:
+            return baseUrl
+        }
+    }
+    
+    var method: HTTPMethod {
+        switch self {
+        case .get:
+            return .GET
+        }
+    }
+    
+}

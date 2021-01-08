@@ -9,24 +9,22 @@ import Foundation
 
 class PhotoService: Requestable {
     
-    typealias NetworkData = Photo
+    typealias NetworkData = [Photo]
     static let shared = PhotoService()
     private init() {}
     
-    var issueEndpoint: IssueEndpoint = .get
+    var photoEndpoint: PhotoEndpoint = .get
     
-    func getAll(completion: @escaping ([Issue]) -> Void) {
-        issueEndpoint = .get
-        request(issueEndpoint) { result in
-            switch result {
-            case .networkSuccess(let data):
-                guard let issues = data.resResult.data else { return }
-                completion(issues)
-            case .networkError(let error):
-                print(error)
-            case .networkFail:
-                print("Network Fail!!!!")
-            }
+    func getAll(completion: @escaping (Result<NetworkData, NetworkError>) -> Void) {
+        photoEndpoint = .get
+        request(photoEndpoint) { result in
+            completion(result)
+//            switch result {
+//            case .success(let data):
+//                completion(data)
+//            case .failure(_):
+//                print("fail")
+//            }
         }
     }
     

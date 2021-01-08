@@ -16,12 +16,14 @@ final class GalleryViewController: UIViewController {
     private let defaultHeight: CGFloat = 44.0
     private let defaultCellCount = 0
     private let loadingCellCount = 1
+    private var photos: [Photo] = []
     
     let imageHeight: [CGFloat?] = [200, 300, 400]
     
     override func viewDidLoad() {
         super.viewDidLoad()
         registerXib()
+        loadPhotos()
     }
     
     private func registerXib() {
@@ -34,6 +36,29 @@ final class GalleryViewController: UIViewController {
                                   forCellReuseIdentifier: GalleryTableViewCell.identifier)
         galleryTableView.register(loadingNibName,
                                   forCellReuseIdentifier: LoadingTableViewCell.identifier)
+    }
+    
+    private func loadPhotos() {
+        PhotoService.shared.getAll { [weak self] result in
+            guard let self = self else { return }
+            switch result {
+            case .success(let photos):
+                self.photos = photos
+            case .failure(let error):
+                switch error {
+                case .invalidURL:
+                    break
+                case .invalidResponse:
+                    break
+                case .invalidData:
+                    break
+                case .failedRequest:
+                    break
+                case .failedParsing:
+                    break
+                }
+            }
+        }
     }
     
 }
