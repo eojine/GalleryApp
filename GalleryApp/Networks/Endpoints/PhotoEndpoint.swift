@@ -8,14 +8,14 @@
 import Foundation
 
 enum PhotoEndpoint {
-    case get
+    case get(page: Int)
 }
 
 extension PhotoEndpoint: EndpointType {
     var path: String {
         switch self {
-        case .get:
-            return baseUrl
+        case .get(let page):
+            return baseUrl + "&page=\(page)"
         }
     }
     

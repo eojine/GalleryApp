@@ -13,6 +13,7 @@ final class GalleryViewController: UIViewController {
     
     private var isPaging = false // 현재 페이징중인지 체크
     private var hasNextPage = false // 다음 페이지를 가지는지 체크
+    private var pageNumber = 1
     private let defaultHeight: CGFloat = 44.0 // LoadingCell 높이
     private let defaultCellCount = 0
     private let loadingCellCount = 1
@@ -38,7 +39,7 @@ final class GalleryViewController: UIViewController {
     }
     
     private func loadPhotos() {
-        PhotoService.shared.getAll { [weak self] result in
+        PhotoService.shared.get(page: pageNumber) { [weak self] result in
             guard let self = self else { return }
             switch result {
             case .success(let photos):
@@ -46,6 +47,7 @@ final class GalleryViewController: UIViewController {
                 DispatchQueue.main.async { [weak self] in
                     guard let self = self else { return }
                     self.galleryTableView.reloadData()
+                    self.pageNumber += 1
                 }
             case .failure(let error):
                 switch error {

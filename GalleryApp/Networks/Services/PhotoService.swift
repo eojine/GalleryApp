@@ -13,10 +13,9 @@ class PhotoService: Requestable {
     static let shared = PhotoService()
     private init() {}
     
-    var photoEndpoint: PhotoEndpoint = .get
-    
-    func getAll(completion: @escaping (Result<NetworkData, NetworkError>) -> Void) {
-        photoEndpoint = .get
+    func get(page: Int,
+             completion: @escaping (Result<NetworkData, NetworkError>) -> Void) {
+        let photoEndpoint: PhotoEndpoint = .get(page: page)
         request(photoEndpoint) { result in
             completion(result)
 //            switch result {
