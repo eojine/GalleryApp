@@ -111,7 +111,7 @@ extension GalleryViewController: UITableViewDataSource {
             guard let cell = tableView
                     .dequeueReusableCell(withIdentifier: GalleryTableViewCell.identifier,
                                          for: indexPath) as? GalleryTableViewCell,
-                  let user = photos[indexPath.row].user?.username,
+                  let user = photos[indexPath.row].user?.name,
                   let url = photos[indexPath.row].urls?.small
             else { return defaultCell }
             
