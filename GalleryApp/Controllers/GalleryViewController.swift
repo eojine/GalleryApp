@@ -116,12 +116,17 @@ extension GalleryViewController: UITableViewDataSource {
             else { return defaultCell }
             
             cell.activityStart()
-            ImageCacheService.shared.load(url: url) { loadedImage in
-                guard let image = loadedImage else { return }
-                DispatchQueue.main.async {
-                    cell.configure(user: user, photo: image)
-                    cell.activityStop()
+            ImageCacheService.shared.load(url: url) { result in
+                switch result {
+                case .success(let image):
+                    DispatchQueue.main.async {
+                        cell.configure(user: user, photo: image)
+                        cell.activityStop()
+                    }
+                case .failure(let error):
+                    print("request fail \(error.localizedDescription)")
                 }
+                
             }
             
             return cell

@@ -14,13 +14,13 @@ final class ImageCacheService {
     private let cachedImages = NSCache<NSString, UIImage>()
     
     func load(url: String,
-              completion: @escaping (UIImage?) -> ()) {
+              completion: @escaping (Result<UIImage, NetworkError>) -> ()) {
         
         let cacheKey = NSString(string: url)
         
         guard let URL = URL(string: url) else { return }
         if let image = chachedImage(url: cacheKey) {
-            completion(image)
+            completion(.success(image))
             return
         }
         
@@ -30,11 +30,11 @@ final class ImageCacheService {
                   let image = UIImage(data: responseData),
                   error == nil
             else {
-                completion(nil)
+                completion(.failure(.failedRequest))
                 return
             }
             self.cacheImage(image, cacheKey, responseData.count)
-            completion(image)
+            completion(.success(image))
         }.resume()
         
     }
