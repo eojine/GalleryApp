@@ -132,4 +132,7 @@ iOSInjectionProject/
 !*.xcworkspace/contents.xcworkspacedata
 **/xcshareddata/WorkspaceSettings.xcsettings
 
+# 토큰 파일 제외
+*.Token.swift
+
 # End of https://www.toptal.com/developers/gitignore/api/swift,xcode,macos

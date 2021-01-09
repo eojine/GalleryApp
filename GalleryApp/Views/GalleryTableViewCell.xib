@@ -5,7 +5,6 @@
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17703"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
-        <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -20,35 +19,37 @@
                 <subviews>
                     <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="4gO-9Q-80o">
                         <rect key="frame" x="0.0" y="0.0" width="421" height="183"/>
-                        <color key="backgroundColor" systemColor="systemIndigoColor"/>
+                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     </imageView>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ixm-gx-kx7">
-                        <rect key="frame" x="16" y="146" width="42" height="21"/>
-                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                        <nil key="textColor"/>
+                        <rect key="frame" x="16" y="150" width="37" height="17"/>
+                        <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="14"/>
+                        <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <nil key="highlightedColor"/>
                     </label>
+                    <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" style="large" translatesAutoresizingMaskIntoConstraints="NO" id="Q8r-4I-jJf">
+                        <rect key="frame" x="192" y="73" width="37" height="37"/>
+                    </activityIndicatorView>
                 </subviews>
+                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                 <constraints>
                     <constraint firstItem="ixm-gx-kx7" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="16" id="23V-f0-X13"/>
                     <constraint firstAttribute="bottom" secondItem="ixm-gx-kx7" secondAttribute="bottom" constant="16" id="LOQ-A6-KwY"/>
                     <constraint firstItem="4gO-9Q-80o" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" id="N52-i1-YNE"/>
                     <constraint firstAttribute="trailing" secondItem="4gO-9Q-80o" secondAttribute="trailing" id="QrV-Ye-3RK"/>
+                    <constraint firstItem="Q8r-4I-jJf" firstAttribute="centerY" secondItem="H2p-sc-9uM" secondAttribute="centerY" id="dEa-ty-r93"/>
+                    <constraint firstItem="Q8r-4I-jJf" firstAttribute="centerX" secondItem="H2p-sc-9uM" secondAttribute="centerX" id="jmM-lR-brj"/>
                     <constraint firstAttribute="bottom" secondItem="4gO-9Q-80o" secondAttribute="bottom" id="o2h-pK-nVz"/>
                     <constraint firstItem="4gO-9Q-80o" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" id="oio-mV-1dK"/>
                 </constraints>
             </tableViewCellContentView>
             <viewLayoutGuide key="safeArea" id="njF-e1-oar"/>
             <connections>
+                <outlet property="activityIndicator" destination="Q8r-4I-jJf" id="jU6-wH-YOI"/>
                 <outlet property="galleryImageView" destination="4gO-9Q-80o" id="eYB-xd-emU"/>
                 <outlet property="titleLabel" destination="ixm-gx-kx7" id="dw5-Rk-lyP"/>
             </connections>
             <point key="canvasLocation" x="-365.94202898550725" y="-27.790178571428569"/>
         </tableViewCell>
     </objects>
-    <resources>
-        <systemColor name="systemIndigoColor">
-            <color red="0.34509803921568627" green="0.33725490196078434" blue="0.83921568627450982" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-        </systemColor>
-    </resources>
 </document>
