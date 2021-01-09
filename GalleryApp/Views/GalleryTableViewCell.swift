@@ -13,10 +13,20 @@ final class GalleryTableViewCell: UITableViewCell {
     
     @IBOutlet private weak var galleryImageView: UIImageView!
     @IBOutlet private weak var titleLabel: UILabel!
+    @IBOutlet private weak var activityIndicator: UIActivityIndicatorView!
     
     func configure(user: String, photo: UIImage) {
         galleryImageView.image = photo
         titleLabel.text = user
+    }
+    
+    func activityStart() {
+        activityIndicator.startAnimating()
+    }
+    
+    func activityStop() {
+        activityIndicator.stopAnimating()
+        activityIndicator.isHidden = true
     }
     
 }

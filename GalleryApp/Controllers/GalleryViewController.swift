@@ -115,10 +115,12 @@ extension GalleryViewController: UITableViewDataSource {
                   let url = photos[indexPath.row].urls?.small
             else { return defaultCell }
             
+            cell.activityStart()
             ImageCache.shared.load(url: url) { loadedImage in
                 guard let image = loadedImage else { return }
                 DispatchQueue.main.async {
                     cell.configure(user: user, photo: image)
+                    cell.activityStop()
                 }
             }
             
