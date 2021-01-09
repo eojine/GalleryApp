@@ -8,9 +8,9 @@
 import Foundation
 import UIKit
 
-final class ImageCache {
+final class ImageCacheService {
     
-    static let shared = ImageCache()
+    static let shared = ImageCacheService()
     private let cachedImages = NSCache<NSString, UIImage>()
     
     func load(url: String,
