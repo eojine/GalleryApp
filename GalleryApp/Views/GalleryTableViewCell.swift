@@ -15,26 +15,30 @@ final class GalleryTableViewCell: UITableViewCell {
     @IBOutlet private weak var titleLabel: UILabel!
     @IBOutlet private weak var activityIndicator: UIActivityIndicatorView!
     
-    override func prepareForReuse() {
-        super.prepareForReuse()
-        galleryImageView.image = nil
-        titleLabel.text = ""
+    override func awakeFromNib() {
+        super.awakeFromNib()
         dropShadow()
     }
     
-    func configure(user: String, photo: UIImage) {
-        galleryImageView.image = photo
-        titleLabel.text = user
+    func configure(user: String?, photo: UIImage?) {
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
+            self.galleryImageView.image = photo
+            self.titleLabel.text = user
+            self.displayActivityIndicator(photo)
+        }
     }
     
-    func activityStart() {
-        activityIndicator.isHidden = false
-        activityIndicator.startAnimating()
-    }
-    
-    func activityStop() {
-        activityIndicator.isHidden = true
-        activityIndicator.stopAnimating()
+    private func displayActivityIndicator(_ image: UIImage?) {
+        if let image = image {
+            galleryImageView.image = image
+            activityIndicator.isHidden = true
+            activityIndicator.stopAnimating()
+        } else {
+            activityIndicator.isHidden = false
+            activityIndicator.startAnimating()
+            galleryImageView.image = .none
+        }
     }
     
     private func dropShadow() {

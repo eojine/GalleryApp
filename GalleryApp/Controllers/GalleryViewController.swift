@@ -104,32 +104,35 @@ extension GalleryViewController: UITableViewDataSource {
                    cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView
                 .dequeueReusableCell(withIdentifier: GalleryTableViewCell.identifier,
-                                     for: indexPath) as? GalleryTableViewCell,
-              let user = photos[indexPath.row].user?.name,
-              let url = photos[indexPath.row].urls?.regular
-        else {
-            return UITableViewCell()
-        }
-        cellConfigure(url: url, user: user, cell: cell)
+                                     for: indexPath) as? GalleryTableViewCell
+        else { return UITableViewCell() }
+        cell.configure(user: .none, photo: .none)
         return cell
-    }
-    
-    private func cellConfigure(url: String,
-                               user: String,
-                               cell: GalleryTableViewCell) {
-        cell.activityStart()
-        loadImageFromURL(url: url) { (image) in
-            DispatchQueue.main.async {
-                cell.configure(user: user, photo: image)
-                cell.activityStop()
-            }
-        }
     }
     
 }
 
 // MARK: UITableViewDelegate
 extension GalleryViewController: UITableViewDelegate {
+    
+    func tableView(_ tableView: UITableView,
+                   willDisplay cell: UITableViewCell,
+                   forRowAt indexPath: IndexPath) {
+        guard let cell = cell as? GalleryTableViewCell,
+              let user = photos[indexPath.row].user?.name,
+              let url = photos[indexPath.row].urls?.regular
+        else { return }
+        
+        loadImageFromURL(url: url) { (image) in
+            cell.configure(user: user, photo: image)
+        }
+    }
+    
+    func tableView(_ tableView: UITableView,
+                   didEndDisplaying cell: UITableViewCell,
+                   forRowAt indexPath: IndexPath) {
+        
+    }
     
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         if reachedBottom { return }
