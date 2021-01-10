@@ -14,27 +14,37 @@ final class ImageCacheService {
     private let cachedImages = NSCache<NSString, UIImage>()
     
     func load(url: String,
-              completion: @escaping (UIImage?) -> ()) {
+              completion: @escaping (Result<UIImage, NetworkError>) -> ()) {
         
         let cacheKey = NSString(string: url)
+        guard let URL = URL(string: url) else {
+            completion(.failure(.invalidURL))
+            return
+        }
         
-        guard let URL = URL(string: url) else { return }
         if let image = chachedImage(url: cacheKey) {
-            completion(image)
+            completion(.success(image))
             return
         }
         
         URLSession.shared.dataTask(with: URL) { [weak self] (data, response, error) in
-            guard let self = self,
-                  let responseData = data,
-                  let image = UIImage(data: responseData),
-                  error == nil
-            else {
-                completion(nil)
+            if error != nil {
+                completion(.failure(.failedRequest))
                 return
             }
-            self.cacheImage(image, cacheKey, responseData.count)
-            completion(image)
+            
+            guard let data = data else {
+                completion(.failure(.invalidData))
+                return
+            }
+            
+            guard let image = UIImage(data: data) else {
+                completion(.failure(.failedParsing))
+                return
+            }
+            
+            self?.cachedImages.setObject(image, forKey: cacheKey, cost: data.count)
+            completion(.success(image))
         }.resume()
         
     }
@@ -42,13 +52,6 @@ final class ImageCacheService {
     /// 이미지 캐시 체크
     private func chachedImage(url: NSString) -> UIImage? {
         return cachedImages.object(forKey: url)
-    }
-    
-    // 이미지 캐싱
-    private func cacheImage(_  image: UIImage,
-                            _ key: NSString,
-                            _ cost: Int) {
-        cachedImages.setObject(image, forKey: key, cost: cost)
     }
     
 }

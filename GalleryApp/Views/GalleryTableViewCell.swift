@@ -15,8 +15,10 @@ final class GalleryTableViewCell: UITableViewCell {
     @IBOutlet private weak var titleLabel: UILabel!
     @IBOutlet private weak var activityIndicator: UIActivityIndicatorView!
     
-    override func awakeFromNib() {
-        super.awakeFromNib()
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        galleryImageView.image = nil
+        titleLabel.text = ""
         dropShadow()
     }
     
@@ -26,12 +28,13 @@ final class GalleryTableViewCell: UITableViewCell {
     }
     
     func activityStart() {
+        activityIndicator.isHidden = false
         activityIndicator.startAnimating()
     }
     
     func activityStop() {
-        activityIndicator.stopAnimating()
         activityIndicator.isHidden = true
+        activityIndicator.stopAnimating()
     }
     
     private func dropShadow() {

@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		350E083F25AA3E4500AB68DE /* UITableView+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 350E083E25AA3E4400AB68DE /* UITableView+.swift */; };
+		357700EB25AB015700872551 /* UIViewController+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 357700EA25AB015700872551 /* UIViewController+.swift */; };
 		35A1195F25A82BED008C31EA /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35A1195E25A82BED008C31EA /* AppDelegate.swift */; };
 		35A1196125A82BEE008C31EA /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35A1196025A82BEE008C31EA /* SceneDelegate.swift */; };
 		35A1196625A82BEE008C31EA /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 35A1196425A82BEE008C31EA /* Main.storyboard */; };
@@ -16,8 +18,6 @@
 		35A119B725A83B4A008C31EA /* GalleryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35A119B625A83B4A008C31EA /* GalleryViewController.swift */; };
 		35A119D325A83DC0008C31EA /* GalleryTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35A119D125A83DC0008C31EA /* GalleryTableViewCell.swift */; };
 		35A119D425A83DC0008C31EA /* GalleryTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 35A119D225A83DC0008C31EA /* GalleryTableViewCell.xib */; };
-		35A119DA25A84623008C31EA /* LoadingTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35A119D825A84623008C31EA /* LoadingTableViewCell.swift */; };
-		35A119DB25A84624008C31EA /* LoadingTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 35A119D925A84623008C31EA /* LoadingTableViewCell.xib */; };
 		35A119F325A84D2F008C31EA /* Requestable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35A119F225A84D2F008C31EA /* Requestable.swift */; };
 		35A119FB25A84D4E008C31EA /* NetworkError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35A119FA25A84D4E008C31EA /* NetworkError.swift */; };
 		35A11A0025A84DA8008C31EA /* EndpointType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35A119FF25A84DA8008C31EA /* EndpointType.swift */; };
@@ -48,6 +48,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		350E083E25AA3E4400AB68DE /* UITableView+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UITableView+.swift"; sourceTree = "<group>"; };
+		357700EA25AB015700872551 /* UIViewController+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIViewController+.swift"; sourceTree = "<group>"; };
 		35A1195B25A82BED008C31EA /* GalleryApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GalleryApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		35A1195E25A82BED008C31EA /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		35A1196025A82BEE008C31EA /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -62,8 +64,6 @@
 		35A119B625A83B4A008C31EA /* GalleryViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GalleryViewController.swift; sourceTree = "<group>"; };
 		35A119D125A83DC0008C31EA /* GalleryTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GalleryTableViewCell.swift; sourceTree = "<group>"; };
 		35A119D225A83DC0008C31EA /* GalleryTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = GalleryTableViewCell.xib; sourceTree = "<group>"; };
-		35A119D825A84623008C31EA /* LoadingTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadingTableViewCell.swift; sourceTree = "<group>"; };
-		35A119D925A84623008C31EA /* LoadingTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = LoadingTableViewCell.xib; sourceTree = "<group>"; };
 		35A119F225A84D2F008C31EA /* Requestable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Requestable.swift; sourceTree = "<group>"; };
 		35A119FA25A84D4E008C31EA /* NetworkError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkError.swift; sourceTree = "<group>"; };
 		35A119FF25A84DA8008C31EA /* EndpointType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EndpointType.swift; sourceTree = "<group>"; };
@@ -101,6 +101,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		350E083D25AA3E3800AB68DE /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				350E083E25AA3E4400AB68DE /* UITableView+.swift */,
+				357700EA25AB015700872551 /* UIViewController+.swift */,
+			);
+			path = Extensions;
+			sourceTree = "<group>";
+		};
 		35A1195225A82BED008C31EA = {
 			isa = PBXGroup;
 			children = (
@@ -128,6 +137,7 @@
 				35A119A625A833AA008C31EA /* Views */,
 				35A119A725A833E6008C31EA /* Storyboards */,
 				35A119F125A84CEE008C31EA /* Networks */,
+				350E083D25AA3E3800AB68DE /* Extensions */,
 				35A1199D25A830C4008C31EA /* Supporting Files */,
 			);
 			path = GalleryApp;
@@ -176,8 +186,6 @@
 			children = (
 				35A119D125A83DC0008C31EA /* GalleryTableViewCell.swift */,
 				35A119D225A83DC0008C31EA /* GalleryTableViewCell.xib */,
-				35A119D825A84623008C31EA /* LoadingTableViewCell.swift */,
-				35A119D925A84623008C31EA /* LoadingTableViewCell.xib */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -325,7 +333,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				35A119D425A83DC0008C31EA /* GalleryTableViewCell.xib in Resources */,
-				35A119DB25A84624008C31EA /* LoadingTableViewCell.xib in Resources */,
 				35A1196B25A82BF0008C31EA /* LaunchScreen.storyboard in Resources */,
 				35A1196825A82BF0008C31EA /* Assets.xcassets in Resources */,
 				35A1196625A82BEE008C31EA /* Main.storyboard in Resources */,
@@ -355,7 +362,6 @@
 			files = (
 				35A11A0025A84DA8008C31EA /* EndpointType.swift in Sources */,
 				35A11A2225A85236008C31EA /* PhotoService.swift in Sources */,
-				35A119DA25A84623008C31EA /* LoadingTableViewCell.swift in Sources */,
 				35A119FB25A84D4E008C31EA /* NetworkError.swift in Sources */,
 				35A119D325A83DC0008C31EA /* GalleryTableViewCell.swift in Sources */,
 				35A11A5425A87911008C31EA /* Urls.swift in Sources */,
@@ -363,6 +369,8 @@
 				35A11A1C25A85140008C31EA /* Photo.swift in Sources */,
 				35A11A5F25A88DE9008C31EA /* User.swift in Sources */,
 				35A119B725A83B4A008C31EA /* GalleryViewController.swift in Sources */,
+				350E083F25AA3E4500AB68DE /* UITableView+.swift in Sources */,
+				357700EB25AB015700872551 /* UIViewController+.swift in Sources */,
 				35A11A4C25A86ED9008C31EA /* ImageCacheService.swift in Sources */,
 				35A11A0525A84DBD008C31EA /* HTTPMethod.swift in Sources */,
 				35A119F325A84D2F008C31EA /* Requestable.swift in Sources */,

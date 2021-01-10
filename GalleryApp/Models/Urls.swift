@@ -8,5 +8,5 @@
 import Foundation
 
 struct Urls: Codable {
-    let small: String?
+    let regular: String?
 }

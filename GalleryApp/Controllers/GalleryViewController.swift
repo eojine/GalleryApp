@@ -11,134 +11,140 @@ final class GalleryViewController: UIViewController {
     
     @IBOutlet private weak var galleryTableView: UITableView!
     
-    private var isPaging = false // 현재 페이징중인지 체크
-    private var hasNextPage = false // 다음 페이지를 가지는지 체크
+    private var reachedBottom = false // 맨 밑에 닿았는지 체크
     private var pageNumber = 1
-    private let defaultHeight: CGFloat = 44.0 // LoadingCell 높이
-    private let defaultCellCount = 0
-    private let loadingCellCount = 1
     private var photos: [Photo] = []
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        galleryTableView.separatorStyle = .none
         registerXib()
-        loadPhotos()
+        appendPhotos()
     }
     
     private func registerXib() {
         let cellNibName = UINib(nibName: GalleryTableViewCell.identifier,
                                 bundle: nil)
-        let loadingNibName = UINib(nibName: LoadingTableViewCell.identifier,
-                                   bundle: nil)
-        
         galleryTableView.register(cellNibName,
                                   forCellReuseIdentifier: GalleryTableViewCell.identifier)
-        galleryTableView.register(loadingNibName,
-                                  forCellReuseIdentifier: LoadingTableViewCell.identifier)
     }
     
-    private func loadPhotos() {
+    private func appendPhotos() {
+        loadPhotosFromServer { photos in
+            DispatchQueue.main.async { [weak self] in
+                guard let self = self else { return }
+                self.photos.append(contentsOf: photos)
+                self.galleryTableView.reloadData()
+                self.galleryTableView.tableFooterView = nil
+                self.galleryTableView.isScrollEnabled = true
+                self.reachedBottom = false
+                self.pageNumber += 1
+            }
+        }
+    }
+    
+    private func showErrorAlert(error: NetworkError) {
+        DispatchQueue.main.async { [weak self] in
+            self?.showSimpleAlert(title: "Error!",
+                                  message: error.errorToString())
+        }
+    }
+    
+}
+
+// MARK:- Networking
+extension GalleryViewController {
+    
+    private func loadPhotosFromServer(completion: @escaping ([Photo]) -> ()) {
         PhotoService.shared.get(page: pageNumber) { [weak self] result in
             guard let self = self else { return }
             switch result {
             case .success(let photos):
-                self.photos = photos
-                DispatchQueue.main.async { [weak self] in
-                    guard let self = self else { return }
-                    self.galleryTableView.reloadData()
-                    self.pageNumber += 1
-                }
+                completion(photos)
             case .failure(let error):
-                switch error {
-                case .invalidURL:
-                    break
-                case .invalidResponse:
-                    break
-                case .invalidData:
-                    break
-                case .failedRequest:
-                    break
-                case .failedParsing:
-                    break
-                }
+                self.showErrorAlert(error: error)
+            }
+        }
+    }
+    
+    private func loadImageFromURL(url: String,
+                                  completion: @escaping (UIImage) -> ()) {
+        ImageCacheService.shared.load(url: url) { [weak self] result in
+            guard let self = self else { return }
+            switch result {
+            case .success(let image):
+                completion(image)
+            case .failure(let error):
+                self.showErrorAlert(error: error)
             }
         }
     }
     
 }
 
+// MARK: UITableViewDataSource
 extension GalleryViewController: UITableViewDataSource {
-    
-    enum Section: Int, CaseIterable {
-        case data // section1: 데이터 표시
-        case loading // section2: 로딩셀 표시
-    }
-    
-    func numberOfSections(in tableView: UITableView) -> Int {
-        return Section.allCases.count
-    }
     
     func tableView(_ tableView: UITableView,
                    heightForRowAt indexPath: IndexPath) -> CGFloat {
-        if isPaging { return defaultHeight }
         let deviceWidth = Float(UIScreen.main.bounds.size.width)
-        guard let height = photos[indexPath.row]
-                .photoHeightForDevice(deviceWidth) else { return defaultHeight }
+        guard let height = photos[indexPath.row].photoHeightForDevice(deviceWidth)
+        else {
+            return 0
+        }
         let cellHeight = CGFloat(height)
         return cellHeight
     }
     
     func tableView(_ tableView: UITableView,
                    numberOfRowsInSection section: Int) -> Int {
-        let section = Section(rawValue: section)
-        switch section {
-        case .data:
-            return photos.count
-        case .loading where isPaging && hasNextPage:
-            return loadingCellCount
-        default:
-            return defaultCellCount
-        }
+        return photos.count
     }
     
     func tableView(_ tableView: UITableView,
                    cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let defaultCell = UITableViewCell()
-        let section = Section(rawValue: indexPath.section)
-        switch section {
-        case .data:
-            guard let cell = tableView
-                    .dequeueReusableCell(withIdentifier: GalleryTableViewCell.identifier,
-                                         for: indexPath) as? GalleryTableViewCell,
-                  let user = photos[indexPath.row].user?.name,
-                  let url = photos[indexPath.row].urls?.small
-            else { return defaultCell }
-            
-            cell.activityStart()
-            ImageCacheService.shared.load(url: url) { loadedImage in
-                guard let image = loadedImage else { return }
-                DispatchQueue.main.async {
-                    cell.configure(user: user, photo: image)
-                    cell.activityStop()
-                }
+        guard let cell = tableView
+                .dequeueReusableCell(withIdentifier: GalleryTableViewCell.identifier,
+                                     for: indexPath) as? GalleryTableViewCell,
+              let user = photos[indexPath.row].user?.name,
+              let url = photos[indexPath.row].urls?.regular
+        else {
+            return UITableViewCell()
+        }
+        cellConfigure(url: url, user: user, cell: cell)
+        return cell
+    }
+    
+    private func cellConfigure(url: String,
+                               user: String,
+                               cell: GalleryTableViewCell) {
+        cell.activityStart()
+        loadImageFromURL(url: url) { (image) in
+            DispatchQueue.main.async {
+                cell.configure(user: user, photo: image)
+                cell.activityStop()
             }
-            
-            return cell
-        case .loading:
-            guard let cell = tableView
-                    .dequeueReusableCell(withIdentifier: LoadingTableViewCell.identifier,
-                                         for: indexPath) as? LoadingTableViewCell
-            else { return defaultCell }
-            cell.start()
-            return cell
-        default:
-            return defaultCell
         }
     }
     
 }
 
+// MARK: UITableViewDelegate
 extension GalleryViewController: UITableViewDelegate {
     
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        if reachedBottom { return }
+        
+        let height = scrollView.frame.size.height
+        let contentYOffset = scrollView.contentOffset.y
+        let scrollViewHeight = scrollView.contentSize.height
+        let distanceFromBottom = scrollViewHeight - contentYOffset
+        
+        if distanceFromBottom < height {
+            reachedBottom = true
+            galleryTableView.isScrollEnabled = false
+            galleryTableView.createBottomSpinnerView()
+            appendPhotos()
+        }
+    }
+
 }
