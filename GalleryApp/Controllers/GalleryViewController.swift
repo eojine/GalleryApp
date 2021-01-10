@@ -19,7 +19,7 @@ final class GalleryViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         registerXib()
-        loadPhotos()
+        appendPhotos()
     }
     
     private func registerXib() {
@@ -29,49 +29,74 @@ final class GalleryViewController: UIViewController {
                                   forCellReuseIdentifier: GalleryTableViewCell.identifier)
     }
     
+    private func showErrorAlert(error: NetworkError) {
+        print("showAlertError~~~!")
+        switch error {
+        case .invalidURL:
+            return
+        case .failedRequest:
+            return
+        case .invalidResponse, .invalidData, .failedParsing:
+            return
+        }
+    }
+    
 }
 
-// MARK:- Methods: Network
+// MARK:- Methods: PhotoListNetwork
 extension GalleryViewController {
     
-    private func loadPhotos() {
+    private func loadPhotosFromServer(completion: @escaping ([Photo]) -> ()) {
         PhotoService.shared.get(page: pageNumber) { [weak self] result in
             guard let self = self else { return }
             switch result {
             case .success(let photos):
-                self.photos.append(contentsOf: photos)
-                DispatchQueue.main.async { [weak self] in
-                    guard let self = self else { return }
-                    self.galleryTableView.reloadData()
-                    self.pageNumber += 1
-                    self.galleryTableView.tableFooterView = nil
-                    self.reachedBottom = false
-                }
+                completion(photos)
             case .failure(let error):
-                switch error {
-                case .invalidURL:
-                    break
-                case .invalidResponse:
-                    break
-                case .invalidData:
-                    break
-                case .failedRequest:
-                    break
-                case .failedParsing:
-                    break
-                }
+                self.showErrorAlert(error: error)
             }
         }
     }
     
+    private func appendPhotos() {
+        loadPhotosFromServer { photos in
+            DispatchQueue.main.async { [weak self] in
+                guard let self = self else { return }
+                self.photos.append(contentsOf: photos)
+                self.galleryTableView.reloadData()
+                self.pageNumber += 1
+                self.galleryTableView.tableFooterView = nil
+                self.reachedBottom = false
+            }
+        }
+    }
+    
+}
+
+// MARK:- Methods: image URL Network
+extension GalleryViewController {
+    
     private func loadImageFromURL(url: String,
                                   completion: @escaping (UIImage) -> ()) {
-        ImageCacheService.shared.load(url: url) { result in
+        ImageCacheService.shared.load(url: url) { [weak self] result in
+            guard let self = self else { return }
             switch result {
             case .success(let image):
                 completion(image)
             case .failure(let error):
-                print("request fail \(error.localizedDescription)")
+                self.showErrorAlert(error: error)
+            }
+        }
+    }
+    
+    private func showCellImage(url: String,
+                               user: String,
+                               cell: GalleryTableViewCell) {
+        cell.activityStart()
+        loadImageFromURL(url: url) { (image) in
+            DispatchQueue.main.async {
+                cell.configure(user: user, photo: image)
+                cell.activityStop()
             }
         }
     }
@@ -108,14 +133,7 @@ extension GalleryViewController: UITableViewDataSource {
         else {
             return UITableViewCell()
         }
-        
-        cell.activityStart()
-        loadImageFromURL(url: url) { (image) in
-            DispatchQueue.main.async {
-                cell.configure(user: user, photo: image)
-                cell.activityStop()
-            }
-        }
+        showCellImage(url: url, user: user, cell: cell)
         return cell
     }
     
@@ -135,7 +153,7 @@ extension GalleryViewController: UITableViewDelegate {
         if distanceFromBottom < height {
             reachedBottom = true
             galleryTableView.createBottomSpinnerView()
-            loadPhotos()
+            appendPhotos()
         }
     }
 

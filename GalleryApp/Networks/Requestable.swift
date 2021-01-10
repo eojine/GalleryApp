@@ -35,11 +35,15 @@ extension Requestable {
                 return
             }
             
-            if let response = response as? HTTPURLResponse,
-               !(200...299).contains(response.statusCode) {
+            guard let response = response as? HTTPURLResponse,
+                  (200...299).contains(response.statusCode) else {
                 completion(.failure(.invalidResponse))
                 return
             }
+            
+//            if let links = response.allHeaderFields["Link"] as? String {
+//                print("링크", links)
+//            }
             
             guard let data = data else {
                 completion(.failure(.invalidData))
