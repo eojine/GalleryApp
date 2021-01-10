@@ -18,12 +18,6 @@ class PhotoService: Requestable {
         let photoEndpoint: PhotoEndpoint = .get(page: page)
         request(photoEndpoint) { result in
             completion(result)
-//            switch result {
-//            case .success(let data):
-//                completion(data)
-//            case .failure(_):
-//                print("fail")
-//            }
         }
     }
     

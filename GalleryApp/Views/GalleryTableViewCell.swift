@@ -28,12 +28,13 @@ final class GalleryTableViewCell: UITableViewCell {
     }
     
     func activityStart() {
+        activityIndicator.isHidden = false
         activityIndicator.startAnimating()
     }
     
     func activityStop() {
-        activityIndicator.stopAnimating()
         activityIndicator.isHidden = true
+        activityIndicator.stopAnimating()
     }
     
     private func dropShadow() {

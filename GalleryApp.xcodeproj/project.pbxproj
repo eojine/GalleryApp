@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		350E083F25AA3E4500AB68DE /* UITableView+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 350E083E25AA3E4400AB68DE /* UITableView+.swift */; };
+		357700EB25AB015700872551 /* UIViewController+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 357700EA25AB015700872551 /* UIViewController+.swift */; };
 		35A1195F25A82BED008C31EA /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35A1195E25A82BED008C31EA /* AppDelegate.swift */; };
 		35A1196125A82BEE008C31EA /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35A1196025A82BEE008C31EA /* SceneDelegate.swift */; };
 		35A1196625A82BEE008C31EA /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 35A1196425A82BEE008C31EA /* Main.storyboard */; };
@@ -48,6 +49,7 @@
 
 /* Begin PBXFileReference section */
 		350E083E25AA3E4400AB68DE /* UITableView+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UITableView+.swift"; sourceTree = "<group>"; };
+		357700EA25AB015700872551 /* UIViewController+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIViewController+.swift"; sourceTree = "<group>"; };
 		35A1195B25A82BED008C31EA /* GalleryApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GalleryApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		35A1195E25A82BED008C31EA /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		35A1196025A82BEE008C31EA /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -103,6 +105,7 @@
 			isa = PBXGroup;
 			children = (
 				350E083E25AA3E4400AB68DE /* UITableView+.swift */,
+				357700EA25AB015700872551 /* UIViewController+.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -367,6 +370,7 @@
 				35A11A5F25A88DE9008C31EA /* User.swift in Sources */,
 				35A119B725A83B4A008C31EA /* GalleryViewController.swift in Sources */,
 				350E083F25AA3E4500AB68DE /* UITableView+.swift in Sources */,
+				357700EB25AB015700872551 /* UIViewController+.swift in Sources */,
 				35A11A4C25A86ED9008C31EA /* ImageCacheService.swift in Sources */,
 				35A11A0525A84DBD008C31EA /* HTTPMethod.swift in Sources */,
 				35A119F325A84D2F008C31EA /* Requestable.swift in Sources */,
