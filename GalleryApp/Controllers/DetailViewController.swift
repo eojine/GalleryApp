@@ -17,8 +17,9 @@ final class DetailViewController: UIViewController {
     
     @IBOutlet private weak var detailCollectionView: UICollectionView!
     
-    var photos: [Photo] = []
+    var photos: [Photo]?
     var currentIndexPath: IndexPath?
+    var isFirstCallViewDidLayoutSubviews = true
     weak var delegate: ScrollDelegate?
     
     override func viewDidLayoutSubviews() {
@@ -45,10 +46,35 @@ final class DetailViewController: UIViewController {
     }
     
     private func scrollToIndexPath() {
-        guard let indexPath = currentIndexPath else { return }
+        guard let indexPath = currentIndexPath,
+              isFirstCallViewDidLayoutSubviews
+              else { return }
         detailCollectionView.scrollToItem(at: indexPath,
                                           at: .right,
                                           animated: false)
+        isFirstCallViewDidLayoutSubviews = false
+    }
+    
+    private func loadImageFromURL(url: String,
+                                  completion: @escaping (UIImage) -> ()) {
+        ImageCacheService.shared.load(url: url) { [weak self] result in
+            guard let self = self else { return }
+            switch result {
+            case .success(let image):
+                completion(image)
+            case .failure(let error):
+                self.showErrorAlert(error: error)
+            }
+        }
+    }
+    
+    private func showErrorAlert(error: NetworkError) {
+        DispatchQueue.main.async { [weak self] in
+            self?.showSimpleAlert(title: "Error!",
+                                  message: error.errorToString()) {
+                
+            }
+        }
     }
     
 }
@@ -57,17 +83,17 @@ extension DetailViewController: UICollectionViewDataSource {
     
     func collectionView(_ collectionView: UICollectionView,
                         numberOfItemsInSection section: Int) -> Int {
-        return photos.count
+        guard let photoCount = photos?.count else { return 0 }
+        return photoCount
     }
     
     func collectionView(_ collectionView: UICollectionView,
                         cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         guard let cell = collectionView
                 .dequeueReusableCell(withReuseIdentifier: DetailCollectionViewCell.identifier,
-                                     for: indexPath) as? DetailCollectionViewCell,
-              let user = photos[indexPath.item].user
+                                     for: indexPath) as? DetailCollectionViewCell
         else { return UICollectionViewCell() }
-        cell.configure(title: "\(indexPath.item + 1)번, \(user)")
+        cell.configure(user: .none, photo: .none)
         return cell
     }
     
@@ -78,6 +104,17 @@ extension DetailViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView,
                         willDisplay cell: UICollectionViewCell,
                         forItemAt indexPath: IndexPath) {
+        
+        guard let cell = cell as? DetailCollectionViewCell,
+              let photo = photos?[indexPath.row],
+              let user = photo.user?.name,
+              let url = photo.urls?.regular
+        else { return }
+        
+        loadImageFromURL(url: url) { (image) in
+            cell.configure(user: user, photo: image)
+        }
+        
         currentIndexPath = indexPath
     }
     
