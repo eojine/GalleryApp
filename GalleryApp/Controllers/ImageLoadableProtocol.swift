@@ -8,12 +8,27 @@
 import UIKit
 
 protocol ImageLoadable: UIViewController {
+    func loadPhotosFromServer(pageNumber: Int,
+                              completion: @escaping ([Photo]?) -> ())
     func loadImageFromURL(url: String,
                           completion: @escaping (UIImage) -> ())
-    func showErrorAlert(error: NetworkError)
 }
 
 extension ImageLoadable {
+    
+    func loadPhotosFromServer(pageNumber: Int,
+                              completion: @escaping ([Photo]?) -> ()) {
+        PhotoService.shared.get(page: pageNumber) { [weak self] result in
+            guard let self = self else { return }
+            switch result {
+            case .success(let photos):
+                completion(photos)
+            case .failure(let error):
+                completion(.none)
+                self.showErrorAlert(error: error)
+            }
+        }
+    }
     
     func loadImageFromURL(url: String,
                           completion: @escaping (UIImage) -> ()) {
@@ -28,7 +43,7 @@ extension ImageLoadable {
         }
     }
     
-    func showErrorAlert(error: NetworkError) {
+    private func showErrorAlert(error: NetworkError) {
         DispatchQueue.main.async { [weak self] in
             self?.showSimpleAlert(title: "Error!",
                                   message: error.errorToString())

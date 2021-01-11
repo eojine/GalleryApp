@@ -9,6 +9,7 @@ import UIKit
 
 protocol ScrollDelegate: class {
     func scrollToIndexPath(at: IndexPath)
+    func send(photos: [Photo])
 }
 
 final class DetailViewController: UIViewController {
@@ -18,6 +19,7 @@ final class DetailViewController: UIViewController {
     @IBOutlet private weak var detailCollectionView: UICollectionView!
     
     var photos: [Photo]?
+    var pageNumber: Int?
     var currentIndexPath: IndexPath?
     var isFirstCallViewDidLayoutSubviews = true
     weak var delegate: ScrollDelegate?
@@ -34,8 +36,10 @@ final class DetailViewController: UIViewController {
     
     @IBAction private func closeButtonDidTap(_ sender: UIButton) {
         dismiss(animated: true, completion: nil)
-        guard let indexPath = currentIndexPath else { return }
+        guard let indexPath = currentIndexPath,
+              let photos = photos else { return }
         delegate?.scrollToIndexPath(at: indexPath)
+        delegate?.send(photos: photos)
     }
     
     private func registerXib() {
@@ -82,12 +86,29 @@ extension DetailViewController: UICollectionViewDelegate, ImageLoadable {
     func collectionView(_ collectionView: UICollectionView,
                         willDisplay cell: UICollectionViewCell,
                         forItemAt indexPath: IndexPath) {
-        
         guard let cell = cell as? DetailCollectionViewCell,
-              let photo = photos?[indexPath.row],
-              let user = photo.user?.name,
-              let url = photo.urls?.regular
+              let photos = photos,
+              let user = photos[indexPath.item].user?.name,
+              let url = photos[indexPath.item].urls?.regular,
+              let pageNumber = pageNumber
         else { return }
+        
+        if indexPath.item == photos.count - 1 {
+            print("마지막")
+//            loadPhotosFromServer(pageNumber: pageNumber) { (photos) in
+//                guard let photos = photos else {
+//
+//                    return
+//                }
+//
+//                DispatchQueue.main.async { [weak self] in
+//                    guard let self = self else { return }
+//                    self.photos?.append(contentsOf: photos)
+//                    self.detailCollectionView.reloadData()
+//                    self.pageNumber? += 1
+//                }
+//            }
+        }
         
         loadImageFromURL(url: url) { (image) in
             cell.configure(user: user, photo: image)

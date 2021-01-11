@@ -16,4 +16,3 @@ extension EndpointType {
         return "https://api.unsplash.com/photos?client_id=\(Token.accessToken)"
     }
 }
-

@@ -12,7 +12,7 @@ final class GalleryViewController: UIViewController {
     @IBOutlet private weak var galleryTableView: UITableView!
     
     private var isReachedBottom = false
-    private var pageNumber = 1
+    var pageNumber = 1
     private var photos: [Photo] = []
     private var currentIndexPath: IndexPath?
     
@@ -35,7 +35,13 @@ final class GalleryViewController: UIViewController {
     }
     
     private func appendPhotos() {
-        loadPhotosFromServer { photos in
+        loadPhotosFromServer(pageNumber: pageNumber) { photos in
+            guard let photos = photos else {
+                DispatchQueue.main.async { [weak self] in
+                    self?.displaySpinnerView(false)
+                }
+                return
+            }
             DispatchQueue.main.async { [weak self] in
                 guard let self = self else { return }
                 self.photos.append(contentsOf: photos)
@@ -60,27 +66,6 @@ final class GalleryViewController: UIViewController {
         }
         isReachedBottom = isBottom
         galleryTableView.isScrollEnabled = !isBottom
-    }
-
-}
-
-// MARK:- Networking
-extension GalleryViewController {
-    
-    private func loadPhotosFromServer(completion: @escaping ([Photo]) -> ()) {
-        PhotoService.shared.get(page: pageNumber) { [weak self] result in
-            guard let self = self else { return }
-            switch result {
-            case .success(let photos):
-                completion(photos)
-            case .failure(let error):
-                self.showErrorAlert(error: error)
-            }
-            
-            DispatchQueue.main.async { [weak self] in
-                self?.displaySpinnerView(false)
-            }
-        }
     }
 
 }
@@ -125,6 +110,7 @@ extension GalleryViewController: UITableViewDelegate, ImageLoadable {
         else { return }
         detailViewController.modalPresentationStyle = .fullScreen
         detailViewController.photos = photos
+        detailViewController.pageNumber = pageNumber
         detailViewController.currentIndexPath = indexPath
         detailViewController.delegate = self
         present(detailViewController, animated: true)
@@ -160,6 +146,11 @@ extension GalleryViewController: UITableViewDelegate, ImageLoadable {
 }
 
 extension GalleryViewController: ScrollDelegate {
+    
+    func send(photos: [Photo]) {
+        self.photos = photos
+        galleryTableView.reloadData()
+    }
     
     func scrollToIndexPath(at: IndexPath) {
         currentIndexPath = at
