@@ -92,9 +92,7 @@ extension GalleryViewController: UITableViewDataSource {
                    heightForRowAt indexPath: IndexPath) -> CGFloat {
         let deviceWidth = Float(UIScreen.main.bounds.size.width)
         guard let height = photos[indexPath.row].photoHeightForDevice(deviceWidth)
-        else {
-            return 0
-        }
+        else { return 0 }
         let cellHeight = CGFloat(height)
         return cellHeight
     }
@@ -118,6 +116,18 @@ extension GalleryViewController: UITableViewDataSource {
 
 // MARK: UITableViewDelegate
 extension GalleryViewController: UITableViewDelegate {
+    
+    func tableView(_ tableView: UITableView,
+                   didSelectRowAt indexPath: IndexPath) {
+        guard let detailViewController = storyboard?
+                .instantiateViewController(withIdentifier: DetailViewController.identifier)
+                as? DetailViewController
+        else { return }
+        detailViewController.modalPresentationStyle = .fullScreen
+        detailViewController.photos = photos
+        detailViewController.currentIndexPath = indexPath
+        present(detailViewController, animated: true)
+    }
     
     func tableView(_ tableView: UITableView,
                    willDisplay cell: UITableViewCell,
