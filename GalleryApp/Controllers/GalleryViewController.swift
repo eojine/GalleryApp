@@ -11,14 +11,20 @@ final class GalleryViewController: UIViewController {
     
     @IBOutlet private weak var galleryTableView: UITableView!
     
-    private var reachedBottom = false // 맨 밑에 닿았는지 체크
+    private var reachedBottom = false
     private var pageNumber = 1
     private var photos: [Photo] = []
+    private var currentIndexPath: IndexPath?
     
     override func viewDidLoad() {
         super.viewDidLoad()
         registerXib()
         appendPhotos()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        scrollToIndexPath()
     }
     
     private func registerXib() {
@@ -40,6 +46,13 @@ final class GalleryViewController: UIViewController {
                 self.pageNumber += 1
             }
         }
+    }
+    
+    private func scrollToIndexPath() {
+        guard let indexPath = currentIndexPath else { return }
+        galleryTableView.scrollToRow(at: indexPath,
+                                     at: .middle,
+                                     animated: true)
     }
     
     private func showErrorAlert(error: NetworkError) {
@@ -126,6 +139,7 @@ extension GalleryViewController: UITableViewDelegate {
         detailViewController.modalPresentationStyle = .fullScreen
         detailViewController.photos = photos
         detailViewController.currentIndexPath = indexPath
+        detailViewController.delegate = self
         present(detailViewController, animated: true)
     }
     
@@ -164,4 +178,12 @@ extension GalleryViewController: UITableViewDelegate {
         }
     }
 
+}
+
+extension GalleryViewController: ScrollDelegate {
+    
+    func scrollToIndexPath(at: IndexPath) {
+        currentIndexPath = at
+    }
+    
 }

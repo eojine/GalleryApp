@@ -7,6 +7,10 @@
 
 import UIKit
 
+protocol ScrollDelegate: class {
+    func scrollToIndexPath(at: IndexPath)
+}
+
 final class DetailViewController: UIViewController {
     
     static let identifier = String(describing: DetailViewController.self)
@@ -14,18 +18,23 @@ final class DetailViewController: UIViewController {
     @IBOutlet private weak var detailCollectionView: UICollectionView!
     
     var photos: [Photo] = []
-    var currentIndexPath: IndexPath = [0, 0]
+    var currentIndexPath: IndexPath?
+    weak var delegate: ScrollDelegate?
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-        detailCollectionView.scrollToItem(at: currentIndexPath,
-                                          at: .right,
-                                          animated: false)
+        scrollToIndexPath()
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
         registerXib()
+    }
+    
+    @IBAction private func closeButtonDidTap(_ sender: UIButton) {
+        dismiss(animated: true, completion: nil)
+        guard let indexPath = currentIndexPath else { return }
+        delegate?.scrollToIndexPath(at: indexPath)
     }
     
     private func registerXib() {
@@ -35,10 +44,11 @@ final class DetailViewController: UIViewController {
                                       forCellWithReuseIdentifier: DetailCollectionViewCell.identifier)
     }
     
-    @IBAction private func closeButtonDidTap(_ sender: UIButton) {
-        dismiss(animated: true) {
-            print("딜리게이트 쏘기")
-        }
+    private func scrollToIndexPath() {
+        guard let indexPath = currentIndexPath else { return }
+        detailCollectionView.scrollToItem(at: indexPath,
+                                          at: .right,
+                                          animated: false)
     }
     
 }
@@ -54,15 +64,22 @@ extension DetailViewController: UICollectionViewDataSource {
                         cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         guard let cell = collectionView
                 .dequeueReusableCell(withReuseIdentifier: DetailCollectionViewCell.identifier,
-                                     for: indexPath) as? DetailCollectionViewCell
+                                     for: indexPath) as? DetailCollectionViewCell,
+              let user = photos[indexPath.item].user
         else { return UICollectionViewCell() }
-        cell.configure(title: "\(indexPath.item) \(photos[indexPath.item].user!)")
+        cell.configure(title: "\(indexPath.item + 1)번, \(user)")
         return cell
     }
     
 }
 
 extension DetailViewController: UICollectionViewDelegate {
+    
+    func collectionView(_ collectionView: UICollectionView,
+                        willDisplay cell: UICollectionViewCell,
+                        forItemAt indexPath: IndexPath) {
+        currentIndexPath = indexPath
+    }
     
 }
 
