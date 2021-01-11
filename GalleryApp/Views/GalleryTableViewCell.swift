@@ -17,23 +17,19 @@ final class GalleryTableViewCell: UITableViewCell {
     
     override func awakeFromNib() {
         super.awakeFromNib()
-        titleLabel.dropShadow(radius: 5.0,
-                              opacity: 0.4,
-                              offset: CGSize(width: 2, height: 2))
+        displayLabelWithDropShadow()
     }
     
     func configure(user: String?, photo: UIImage?) {
         DispatchQueue.main.async { [weak self] in
-            guard let self = self else { return }
-            self.galleryImageView.image = photo
-            self.titleLabel.text = user
-            self.displayActivityIndicator(photo)
+            self?.titleLabel.text = user
+            self?.displayImageWithActivityIndicator(photo)
         }
     }
     
-    private func displayActivityIndicator(_ image: UIImage?) {
+    private func displayImageWithActivityIndicator(_ image: UIImage?) {
         if let image = image {
-            transition(toImage: image)
+            galleryImageView.transition(toImage: image)
             activityIndicator.isHidden = true
             activityIndicator.stopAnimating()
         } else {
@@ -43,13 +39,10 @@ final class GalleryTableViewCell: UITableViewCell {
         }
     }
     
-    private func transition(toImage image: UIImage) {
-        UIView.transition(with: self, duration: 0.3,
-                          options: .transitionCrossDissolve,
-                          animations: { [weak self] in
-                            self?.galleryImageView.image = image
-                          },
-                          completion: nil)
+    private func displayLabelWithDropShadow() {
+        titleLabel.dropShadow(radius: 5.0,
+                              opacity: 0.4,
+                              offset: CGSize(width: 2, height: 2))
     }
     
 }
