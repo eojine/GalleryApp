@@ -11,14 +11,20 @@ final class GalleryViewController: UIViewController {
     
     @IBOutlet private weak var galleryTableView: UITableView!
     
-    private var reachedBottom = false // 맨 밑에 닿았는지 체크
-    private var pageNumber = 1
+    private var isReachedBottom = false
+    var pageNumber = 1
     private var photos: [Photo] = []
+    private var currentIndexPath: IndexPath?
     
     override func viewDidLoad() {
         super.viewDidLoad()
         registerXib()
         appendPhotos()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        scrollToIndexPath()
     }
     
     private func registerXib() {
@@ -29,56 +35,39 @@ final class GalleryViewController: UIViewController {
     }
     
     private func appendPhotos() {
-        loadPhotosFromServer { photos in
+        loadPhotosFromServer(pageNumber: pageNumber) { photos in
+            guard let photos = photos else {
+                DispatchQueue.main.async { [weak self] in
+                    self?.displaySpinnerView(false)
+                }
+                return
+            }
             DispatchQueue.main.async { [weak self] in
                 guard let self = self else { return }
                 self.photos.append(contentsOf: photos)
                 self.galleryTableView.reloadData()
-                self.galleryTableView.tableFooterView = nil
-                self.galleryTableView.isScrollEnabled = true
-                self.reachedBottom = false
                 self.pageNumber += 1
             }
         }
     }
     
-    private func showErrorAlert(error: NetworkError) {
-        DispatchQueue.main.async { [weak self] in
-            self?.showSimpleAlert(title: "Error!",
-                                  message: error.errorToString())
-        }
+    private func scrollToIndexPath() {
+        guard let indexPath = currentIndexPath else { return }
+        galleryTableView.scrollToRow(at: indexPath,
+                                     at: .middle,
+                                     animated: true)
     }
     
-}
+    private func displaySpinnerView(_ isBottom: Bool = true) {
+        if isBottom {
+            galleryTableView.createBottomSpinnerView()
+        } else {
+            galleryTableView.tableFooterView = nil
+        }
+        isReachedBottom = isBottom
+        galleryTableView.isScrollEnabled = !isBottom
+    }
 
-// MARK:- Networking
-extension GalleryViewController {
-    
-    private func loadPhotosFromServer(completion: @escaping ([Photo]) -> ()) {
-        PhotoService.shared.get(page: pageNumber) { [weak self] result in
-            guard let self = self else { return }
-            switch result {
-            case .success(let photos):
-                completion(photos)
-            case .failure(let error):
-                self.showErrorAlert(error: error)
-            }
-        }
-    }
-    
-    private func loadImageFromURL(url: String,
-                                  completion: @escaping (UIImage) -> ()) {
-        ImageCacheService.shared.load(url: url) { [weak self] result in
-            guard let self = self else { return }
-            switch result {
-            case .success(let image):
-                completion(image)
-            case .failure(let error):
-                self.showErrorAlert(error: error)
-            }
-        }
-    }
-    
 }
 
 // MARK: UITableViewDataSource
@@ -88,9 +77,7 @@ extension GalleryViewController: UITableViewDataSource {
                    heightForRowAt indexPath: IndexPath) -> CGFloat {
         let deviceWidth = Float(UIScreen.main.bounds.size.width)
         guard let height = photos[indexPath.row].photoHeightForDevice(deviceWidth)
-        else {
-            return 0
-        }
+        else { return 0 }
         let cellHeight = CGFloat(height)
         return cellHeight
     }
@@ -104,35 +91,46 @@ extension GalleryViewController: UITableViewDataSource {
                    cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView
                 .dequeueReusableCell(withIdentifier: GalleryTableViewCell.identifier,
-                                     for: indexPath) as? GalleryTableViewCell,
-              let user = photos[indexPath.row].user?.name,
-              let url = photos[indexPath.row].urls?.regular
-        else {
-            return UITableViewCell()
-        }
-        cellConfigure(url: url, user: user, cell: cell)
+                                     for: indexPath) as? GalleryTableViewCell
+        else { return UITableViewCell() }
+        cell.configure(user: .none, photo: .none)
         return cell
-    }
-    
-    private func cellConfigure(url: String,
-                               user: String,
-                               cell: GalleryTableViewCell) {
-        cell.activityStart()
-        loadImageFromURL(url: url) { (image) in
-            DispatchQueue.main.async {
-                cell.configure(user: user, photo: image)
-                cell.activityStop()
-            }
-        }
     }
     
 }
 
 // MARK: UITableViewDelegate
-extension GalleryViewController: UITableViewDelegate {
+extension GalleryViewController: UITableViewDelegate, ImageLoadable {
+    
+    func tableView(_ tableView: UITableView,
+                   didSelectRowAt indexPath: IndexPath) {
+        guard let detailViewController = storyboard?
+                .instantiateViewController(withIdentifier: DetailViewController.identifier)
+                as? DetailViewController
+        else { return }
+        detailViewController.modalPresentationStyle = .fullScreen
+        detailViewController.photos = photos
+        detailViewController.pageNumber = pageNumber
+        detailViewController.currentIndexPath = indexPath
+        detailViewController.delegate = self
+        present(detailViewController, animated: true)
+    }
+    
+    func tableView(_ tableView: UITableView,
+                   willDisplay cell: UITableViewCell,
+                   forRowAt indexPath: IndexPath) {
+        guard let cell = cell as? GalleryTableViewCell,
+              let user = photos[indexPath.row].user?.name,
+              let url = photos[indexPath.row].urls?.regular
+        else { return }
+        
+        loadImageFromURL(url: url) { (image) in
+            cell.configure(user: user, photo: image)
+        }
+    }
     
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        if reachedBottom { return }
+        if isReachedBottom { return }
         
         let height = scrollView.frame.size.height
         let contentYOffset = scrollView.contentOffset.y
@@ -140,11 +138,22 @@ extension GalleryViewController: UITableViewDelegate {
         let distanceFromBottom = scrollViewHeight - contentYOffset
         
         if distanceFromBottom < height {
-            reachedBottom = true
-            galleryTableView.isScrollEnabled = false
-            galleryTableView.createBottomSpinnerView()
+            displaySpinnerView()
             appendPhotos()
         }
     }
 
+}
+
+extension GalleryViewController: ScrollDelegate {
+    
+    func send(photos: [Photo]) {
+        self.photos = photos
+        galleryTableView.reloadData()
+    }
+    
+    func scrollToIndexPath(at: IndexPath) {
+        currentIndexPath = at
+    }
+    
 }

@@ -1,31 +1,31 @@
 //
-//  GalleryTableViewCell.swift
+//  DetailCollectionViewCell.swift
 //  GalleryApp
 //
-//  Created by Eojin Yang on 2021/01/08.
+//  Created by Eojin Yang on 2021/01/11.
 //
 
 import UIKit
 
-final class GalleryTableViewCell: UITableViewCell {
+final class DetailCollectionViewCell: UICollectionViewCell {
+
+    static let identifier = String(describing: DetailCollectionViewCell.self)
     
-    static let identifier = String(describing: GalleryTableViewCell.self)
-    
-    @IBOutlet private weak var galleryImageView: UIImageView!
     @IBOutlet private weak var titleLabel: UILabel!
+    @IBOutlet private weak var detailImageView: UIImageView!
     @IBOutlet private weak var activityIndicator: UIActivityIndicatorView!
     
     override func prepareForReuse() {
         super.prepareForReuse()
         titleLabel.text = .none
-        galleryImageView.image = .none
+        detailImageView.image = .none
     }
     
     override func awakeFromNib() {
         super.awakeFromNib()
         displayLabelWithDropShadow()
     }
-    
+
     func configure(user: String?, photo: UIImage?) {
         DispatchQueue.main.async { [weak self] in
             self?.titleLabel.text = user
@@ -35,13 +35,13 @@ final class GalleryTableViewCell: UITableViewCell {
     
     private func displayImageWithActivityIndicator(_ image: UIImage?) {
         if let image = image {
-            galleryImageView.transition(toImage: image)
+            detailImageView.transition(toImage: image)
             activityIndicator.isHidden = true
             activityIndicator.stopAnimating()
         } else {
             activityIndicator.isHidden = false
             activityIndicator.startAnimating()
-            galleryImageView.image = .none
+            detailImageView.image = .none
         }
     }
     

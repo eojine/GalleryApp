@@ -4,6 +4,7 @@
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17703"/>
+        <capability name="Image references" minToolsVersion="12.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -43,5 +44,68 @@
             </objects>
             <point key="canvasLocation" x="-197.10144927536234" y="118.52678571428571"/>
         </scene>
+        <!--Detail View Controller-->
+        <scene sceneID="ORB-EJ-NyK">
+            <objects>
+                <viewController storyboardIdentifier="DetailViewController" useStoryboardIdentifierAsRestorationIdentifier="YES" id="2u5-XU-U83" customClass="DetailViewController" customModule="GalleryApp" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="CVh-bc-IIa">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" pagingEnabled="YES" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="XDg-Hj-fcD">
+                                <rect key="frame" x="0.0" y="44" width="414" height="818"/>
+                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <collectionViewFlowLayout key="collectionViewLayout" scrollDirection="horizontal" minimumLineSpacing="0.0" minimumInteritemSpacing="0.0" id="0ls-ha-51K">
+                                    <size key="itemSize" width="414" height="829"/>
+                                    <size key="headerReferenceSize" width="0.0" height="0.0"/>
+                                    <size key="footerReferenceSize" width="0.0" height="0.0"/>
+                                    <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
+                                </collectionViewFlowLayout>
+                                <cells/>
+                                <connections>
+                                    <outlet property="dataSource" destination="2u5-XU-U83" id="93e-lB-u4P"/>
+                                    <outlet property="delegate" destination="2u5-XU-U83" id="Hkl-cH-6N4"/>
+                                </connections>
+                            </collectionView>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="I9U-Z9-rAC">
+                                <rect key="frame" x="8" y="52" width="44" height="44"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="44" id="5Jw-SK-3Tz"/>
+                                    <constraint firstAttribute="width" secondItem="I9U-Z9-rAC" secondAttribute="height" id="y9I-6w-QpZ"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="system" pointSize="18"/>
+                                <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <state key="normal">
+                                    <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                    <imageReference key="image" image="multiply" catalog="system" symbolScale="large"/>
+                                    <preferredSymbolConfiguration key="preferredSymbolConfiguration" scale="large"/>
+                                </state>
+                                <connections>
+                                    <action selector="closeButtonDidTap:" destination="2u5-XU-U83" eventType="touchUpInside" id="cB0-xR-3VG"/>
+                                </connections>
+                            </button>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="2sj-Lm-wzb"/>
+                        <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <constraints>
+                            <constraint firstItem="I9U-Z9-rAC" firstAttribute="leading" secondItem="2sj-Lm-wzb" secondAttribute="leading" constant="8" id="4Qw-kh-bat"/>
+                            <constraint firstItem="I9U-Z9-rAC" firstAttribute="top" secondItem="2sj-Lm-wzb" secondAttribute="top" constant="8" id="AtN-aa-d2H"/>
+                            <constraint firstItem="2sj-Lm-wzb" firstAttribute="trailing" secondItem="XDg-Hj-fcD" secondAttribute="trailing" id="cL7-Kb-2Oi"/>
+                            <constraint firstItem="XDg-Hj-fcD" firstAttribute="top" secondItem="2sj-Lm-wzb" secondAttribute="top" id="sby-H0-8j8"/>
+                            <constraint firstItem="2sj-Lm-wzb" firstAttribute="bottom" secondItem="XDg-Hj-fcD" secondAttribute="bottom" id="tYB-2y-5qs"/>
+                            <constraint firstItem="XDg-Hj-fcD" firstAttribute="leading" secondItem="2sj-Lm-wzb" secondAttribute="leading" id="vwX-el-c63"/>
+                        </constraints>
+                    </view>
+                    <connections>
+                        <outlet property="detailCollectionView" destination="XDg-Hj-fcD" id="qfP-m0-NJL"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="lAH-QH-xUe" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="530.43478260869574" y="118.52678571428571"/>
+        </scene>
     </scenes>
+    <resources>
+        <image name="multiply" catalog="system" width="128" height="111"/>
+    </resources>
 </document>
