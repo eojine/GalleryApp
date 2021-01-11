@@ -17,7 +17,9 @@ final class GalleryTableViewCell: UITableViewCell {
     
     override func awakeFromNib() {
         super.awakeFromNib()
-        dropShadow()
+        titleLabel.dropShadow(radius: 5.0,
+                              opacity: 0.4,
+                              offset: CGSize(width: 2, height: 2))
     }
     
     func configure(user: String?, photo: UIImage?) {
@@ -39,13 +41,6 @@ final class GalleryTableViewCell: UITableViewCell {
             activityIndicator.startAnimating()
             galleryImageView.image = .none
         }
-    }
-    
-    private func dropShadow() {
-        titleLabel.layer.masksToBounds = false
-        titleLabel.layer.shadowRadius = 5.0
-        titleLabel.layer.shadowOpacity = 0.4
-        titleLabel.layer.shadowOffset = CGSize(width: 2, height: 2)
     }
     
     private func transition(toImage image: UIImage) {
