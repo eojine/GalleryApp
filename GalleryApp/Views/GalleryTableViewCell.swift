@@ -15,6 +15,12 @@ final class GalleryTableViewCell: UITableViewCell {
     @IBOutlet private weak var titleLabel: UILabel!
     @IBOutlet private weak var activityIndicator: UIActivityIndicatorView!
     
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        titleLabel.text = .none
+        galleryImageView.image = .none
+    }
+    
     override func awakeFromNib() {
         super.awakeFromNib()
         displayLabelWithDropShadow()

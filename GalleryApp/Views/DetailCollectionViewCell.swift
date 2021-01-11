@@ -9,10 +9,17 @@ import UIKit
 
 final class DetailCollectionViewCell: UICollectionViewCell {
 
+    static let identifier = String(describing: DetailCollectionViewCell.self)
+    
     @IBOutlet private weak var titleLabel: UILabel!
     @IBOutlet private weak var detailImageView: UIImageView!
+    @IBOutlet private weak var activityIndicator: UIActivityIndicatorView!
     
-    static let identifier = String(describing: DetailCollectionViewCell.self)
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        titleLabel.text = .none
+        detailImageView.image = .none
+    }
     
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -29,11 +36,11 @@ final class DetailCollectionViewCell: UICollectionViewCell {
     private func displayImageWithActivityIndicator(_ image: UIImage?) {
         if let image = image {
             detailImageView.transition(toImage: image)
-//            activityIndicator.isHidden = true
-//            activityIndicator.stopAnimating()
+            activityIndicator.isHidden = true
+            activityIndicator.stopAnimating()
         } else {
-//            activityIndicator.isHidden = false
-//            activityIndicator.startAnimating()
+            activityIndicator.isHidden = false
+            activityIndicator.startAnimating()
             detailImageView.image = .none
         }
     }

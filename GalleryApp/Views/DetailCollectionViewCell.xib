@@ -5,7 +5,6 @@
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17703"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
-        <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -21,29 +20,33 @@
                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="hvh-tE-ZKz">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="724"/>
                         <subviews>
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="eyA-St-Rpl">
+                                <rect key="frame" x="0.0" y="0.0" width="414" height="724"/>
+                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                            </imageView>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Name" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="uui-Vc-qEn">
                                 <rect key="frame" x="62" y="20" width="290" height="20.5"/>
                                 <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="17"/>
                                 <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="eyA-St-Rpl">
-                                <rect key="frame" x="0.0" y="206" width="414" height="312"/>
-                                <color key="backgroundColor" systemColor="systemOrangeColor"/>
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="312" id="xP2-E1-StZ"/>
-                                </constraints>
-                            </imageView>
+                            <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" animating="YES" style="medium" translatesAutoresizingMaskIntoConstraints="NO" id="FCW-dI-Jcc">
+                                <rect key="frame" x="197" y="352" width="20" height="20"/>
+                            </activityIndicatorView>
                         </subviews>
                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
+                            <constraint firstAttribute="trailing" secondItem="eyA-St-Rpl" secondAttribute="trailing" id="1wS-Gh-lMK"/>
                             <constraint firstItem="uui-Vc-qEn" firstAttribute="top" secondItem="hvh-tE-ZKz" secondAttribute="top" constant="20" id="9RX-Ik-y4S"/>
                             <constraint firstAttribute="trailing" secondItem="eyA-St-Rpl" secondAttribute="trailing" id="DMP-FO-4qr"/>
-                            <constraint firstItem="eyA-St-Rpl" firstAttribute="centerY" secondItem="hvh-tE-ZKz" secondAttribute="centerY" id="KY2-Ca-8C7"/>
+                            <constraint firstItem="FCW-dI-Jcc" firstAttribute="centerY" secondItem="eyA-St-Rpl" secondAttribute="centerY" id="TqL-LS-c7Z"/>
+                            <constraint firstItem="eyA-St-Rpl" firstAttribute="leading" secondItem="hvh-tE-ZKz" secondAttribute="leading" id="VOv-u6-goa"/>
                             <constraint firstItem="uui-Vc-qEn" firstAttribute="centerX" secondItem="hvh-tE-ZKz" secondAttribute="centerX" id="ZUj-rQ-8At"/>
-                            <constraint firstItem="eyA-St-Rpl" firstAttribute="width" secondItem="hvh-tE-ZKz" secondAttribute="width" id="dZ2-52-isZ"/>
                             <constraint firstItem="eyA-St-Rpl" firstAttribute="leading" secondItem="hvh-tE-ZKz" secondAttribute="leading" id="kNQ-B6-ehN"/>
+                            <constraint firstAttribute="bottom" secondItem="eyA-St-Rpl" secondAttribute="bottom" id="mtZ-nw-Ne8"/>
+                            <constraint firstItem="eyA-St-Rpl" firstAttribute="top" secondItem="hvh-tE-ZKz" secondAttribute="top" id="oW5-Vy-kT3"/>
                             <constraint firstItem="uui-Vc-qEn" firstAttribute="width" secondItem="hvh-tE-ZKz" secondAttribute="width" multiplier="0.7" id="x1u-Hc-eWD"/>
+                            <constraint firstItem="FCW-dI-Jcc" firstAttribute="centerX" secondItem="eyA-St-Rpl" secondAttribute="centerX" id="xLX-aN-Vbb"/>
                         </constraints>
                     </view>
                 </subviews>
@@ -57,15 +60,11 @@
             </constraints>
             <size key="customSize" width="423" height="284"/>
             <connections>
+                <outlet property="activityIndicator" destination="FCW-dI-Jcc" id="3Yg-8A-KMq"/>
                 <outlet property="detailImageView" destination="eyA-St-Rpl" id="7ZH-fR-67T"/>
                 <outlet property="titleLabel" destination="uui-Vc-qEn" id="9Jl-Pq-ngK"/>
             </connections>
             <point key="canvasLocation" x="275.36231884057975" y="150.66964285714286"/>
         </collectionViewCell>
     </objects>
-    <resources>
-        <systemColor name="systemOrangeColor">
-            <color red="1" green="0.58431372549019611" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-        </systemColor>
-    </resources>
 </document>

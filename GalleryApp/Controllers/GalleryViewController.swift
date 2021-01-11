@@ -11,7 +11,7 @@ final class GalleryViewController: UIViewController {
     
     @IBOutlet private weak var galleryTableView: UITableView!
     
-    private var reachedBottom = false
+    private var isReachedBottom = false
     private var pageNumber = 1
     private var photos: [Photo] = []
     private var currentIndexPath: IndexPath?
@@ -40,7 +40,6 @@ final class GalleryViewController: UIViewController {
                 guard let self = self else { return }
                 self.photos.append(contentsOf: photos)
                 self.galleryTableView.reloadData()
-                self.reachedBottom = false
                 self.pageNumber += 1
             }
         }
@@ -51,6 +50,16 @@ final class GalleryViewController: UIViewController {
         galleryTableView.scrollToRow(at: indexPath,
                                      at: .middle,
                                      animated: true)
+    }
+    
+    private func displaySpinnerView(_ isBottom: Bool = true) {
+        if isBottom {
+            galleryTableView.createBottomSpinnerView()
+        } else {
+            galleryTableView.tableFooterView = nil
+        }
+        isReachedBottom = isBottom
+        galleryTableView.isScrollEnabled = !isBottom
     }
 
 }
@@ -69,8 +78,7 @@ extension GalleryViewController {
             }
             
             DispatchQueue.main.async { [weak self] in
-                self?.galleryTableView.tableFooterView = nil
-                self?.galleryTableView.isScrollEnabled = true
+                self?.displaySpinnerView(false)
             }
         }
     }
@@ -135,14 +143,8 @@ extension GalleryViewController: UITableViewDelegate, ImageLoadable {
         }
     }
     
-    func tableView(_ tableView: UITableView,
-                   didEndDisplaying cell: UITableViewCell,
-                   forRowAt indexPath: IndexPath) {
-        
-    }
-    
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        if reachedBottom { return }
+        if isReachedBottom { return }
         
         let height = scrollView.frame.size.height
         let contentYOffset = scrollView.contentOffset.y
@@ -150,9 +152,7 @@ extension GalleryViewController: UITableViewDelegate, ImageLoadable {
         let distanceFromBottom = scrollViewHeight - contentYOffset
         
         if distanceFromBottom < height {
-            reachedBottom = true
-            galleryTableView.isScrollEnabled = false
-            galleryTableView.createBottomSpinnerView()
+            displaySpinnerView()
             appendPhotos()
         }
     }
