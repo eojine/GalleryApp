@@ -14,6 +14,15 @@ struct Photo: Codable {
     let color: String?
     let urls: Urls?
     let user: User?
+    
+    struct Urls: Codable {
+        let regular: String?
+    }
+    
+    struct User: Codable {
+        let name: String?
+    }
+
 }
 
 extension Photo {

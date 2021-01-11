@@ -45,7 +45,11 @@ final class GalleryViewController: UIViewController {
     private func showErrorAlert(error: NetworkError) {
         DispatchQueue.main.async { [weak self] in
             self?.showSimpleAlert(title: "Error!",
-                                  message: error.errorToString())
+                                  message: error.errorToString()) {
+                self?.galleryTableView.tableFooterView = nil
+                self?.galleryTableView.isScrollEnabled = true
+                self?.reachedBottom = false
+            }
         }
     }
     

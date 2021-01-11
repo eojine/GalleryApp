@@ -31,7 +31,7 @@ final class GalleryTableViewCell: UITableViewCell {
     
     private func displayActivityIndicator(_ image: UIImage?) {
         if let image = image {
-            galleryImageView.image = image
+            transition(toImage: image)
             activityIndicator.isHidden = true
             activityIndicator.stopAnimating()
         } else {
@@ -46,6 +46,15 @@ final class GalleryTableViewCell: UITableViewCell {
         titleLabel.layer.shadowRadius = 5.0
         titleLabel.layer.shadowOpacity = 0.4
         titleLabel.layer.shadowOffset = CGSize(width: 2, height: 2)
+    }
+    
+    private func transition(toImage image: UIImage) {
+        UIView.transition(with: self, duration: 0.3,
+                          options: .transitionCrossDissolve,
+                          animations: { [weak self] in
+                            self?.galleryImageView.image = image
+                          },
+                          completion: nil)
     }
     
 }
