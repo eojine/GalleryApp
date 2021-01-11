@@ -55,28 +55,6 @@ final class DetailViewController: UIViewController {
         isFirstCallViewDidLayoutSubviews = false
     }
     
-    private func loadImageFromURL(url: String,
-                                  completion: @escaping (UIImage) -> ()) {
-        ImageCacheService.shared.load(url: url) { [weak self] result in
-            guard let self = self else { return }
-            switch result {
-            case .success(let image):
-                completion(image)
-            case .failure(let error):
-                self.showErrorAlert(error: error)
-            }
-        }
-    }
-    
-    private func showErrorAlert(error: NetworkError) {
-        DispatchQueue.main.async { [weak self] in
-            self?.showSimpleAlert(title: "Error!",
-                                  message: error.errorToString()) {
-                
-            }
-        }
-    }
-    
 }
 
 extension DetailViewController: UICollectionViewDataSource {
@@ -99,7 +77,7 @@ extension DetailViewController: UICollectionViewDataSource {
     
 }
 
-extension DetailViewController: UICollectionViewDelegate {
+extension DetailViewController: UICollectionViewDelegate, ImageLoadable {
     
     func collectionView(_ collectionView: UICollectionView,
                         willDisplay cell: UICollectionViewCell,

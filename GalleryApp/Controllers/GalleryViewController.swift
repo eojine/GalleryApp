@@ -40,8 +40,6 @@ final class GalleryViewController: UIViewController {
                 guard let self = self else { return }
                 self.photos.append(contentsOf: photos)
                 self.galleryTableView.reloadData()
-                self.galleryTableView.tableFooterView = nil
-                self.galleryTableView.isScrollEnabled = true
                 self.reachedBottom = false
                 self.pageNumber += 1
             }
@@ -54,18 +52,7 @@ final class GalleryViewController: UIViewController {
                                      at: .middle,
                                      animated: true)
     }
-    
-    private func showErrorAlert(error: NetworkError) {
-        DispatchQueue.main.async { [weak self] in
-            self?.showSimpleAlert(title: "Error!",
-                                  message: error.errorToString()) {
-                self?.galleryTableView.tableFooterView = nil
-                self?.galleryTableView.isScrollEnabled = true
-                self?.reachedBottom = false
-            }
-        }
-    }
-    
+
 }
 
 // MARK:- Networking
@@ -80,22 +67,14 @@ extension GalleryViewController {
             case .failure(let error):
                 self.showErrorAlert(error: error)
             }
-        }
-    }
-    
-    private func loadImageFromURL(url: String,
-                                  completion: @escaping (UIImage) -> ()) {
-        ImageCacheService.shared.load(url: url) { [weak self] result in
-            guard let self = self else { return }
-            switch result {
-            case .success(let image):
-                completion(image)
-            case .failure(let error):
-                self.showErrorAlert(error: error)
+            
+            DispatchQueue.main.async { [weak self] in
+                self?.galleryTableView.tableFooterView = nil
+                self?.galleryTableView.isScrollEnabled = true
             }
         }
     }
-    
+
 }
 
 // MARK: UITableViewDataSource
@@ -128,7 +107,7 @@ extension GalleryViewController: UITableViewDataSource {
 }
 
 // MARK: UITableViewDelegate
-extension GalleryViewController: UITableViewDelegate {
+extension GalleryViewController: UITableViewDelegate, ImageLoadable {
     
     func tableView(_ tableView: UITableView,
                    didSelectRowAt indexPath: IndexPath) {

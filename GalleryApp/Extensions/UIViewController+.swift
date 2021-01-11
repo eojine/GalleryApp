@@ -10,15 +10,14 @@ import UIKit
 extension UIViewController {
     
     func showSimpleAlert(title : String,
-                         message : String,
-                         complition: @escaping () -> ()) {
+                         message : String) {
         let alert = UIAlertController(title: title,
                                       message: message,
                                       preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "OK",
                                       style: .default,
                                       handler: nil))
-        present(alert, animated: true, completion: complition)
+        present(alert, animated: true, completion: nil)
     }
     
 }
