@@ -12,7 +12,7 @@ final class GalleryViewController: UIViewController {
     @IBOutlet private weak var galleryTableView: UITableView!
     
     private var reachedBottom = false
-    var pageNumber = 1
+    private var pageNumber = 1
     private var photos: [Photo] = []
     private var currentIndexPath: IndexPath?
     
@@ -31,36 +31,25 @@ final class GalleryViewController: UIViewController {
     
     private func appendPhotos() {
         loadPhotosFromServer(pageNumber: pageNumber) { photos in
-            guard let photos = photos else {
-//                DispatchQueue.main.async { [weak self] in
-//                    self?.displaySpinnerView(false)
-//                }
-                return
-            }
             DispatchQueue.main.async { [weak self] in
                 guard let self = self else { return }
                 self.photos.append(contentsOf: photos)
                 self.galleryTableView.reloadData()
-                self.galleryTableView.tableFooterView = nil
-                self.galleryTableView.isScrollEnabled = true
                 self.reachedBottom = false
                 self.pageNumber += 1
-                
-                print("테이블뷰 포토개수", self.photos.count)
+                self.spinnerView(display: false)
             }
         }
     }
     
-//    private func displaySpinnerView(_ isBottom: Bool = true) {
-//
-//        if isBottom {
-//            galleryTableView.createBottomSpinnerView()
-//        } else {
-//            galleryTableView.tableFooterView = nil
-//        }
-//        isReachedBottom = isBottom
-//        galleryTableView.isScrollEnabled = !isBottom
-//    }
+    private func spinnerView(display: Bool) {
+        if display {
+            galleryTableView.createBottomSpinnerView()
+        } else {
+            galleryTableView.tableFooterView = nil
+        }
+        galleryTableView.isScrollEnabled = !display
+    }
 
 }
 
@@ -133,11 +122,8 @@ extension GalleryViewController: UITableViewDelegate, ImageLoadable {
         
         if distanceFromBottom < height {
             reachedBottom = true
-            galleryTableView.isScrollEnabled = false
-            galleryTableView.createBottomSpinnerView()
+            spinnerView(display: true)
             appendPhotos()
-        } else {
-            reachedBottom = false
         }
     }
 
@@ -149,8 +135,6 @@ extension GalleryViewController: ScrollDelegate {
         self.photos = photos
         self.pageNumber = pageNumber
         galleryTableView.reloadData()
-        
-        print("보내준 포토개수", photos.count)
     }
     
     func scrollToIndexPath(at: IndexPath) {

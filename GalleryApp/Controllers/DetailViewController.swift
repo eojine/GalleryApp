@@ -55,7 +55,7 @@ final class DetailViewController: UIViewController {
               isFirstCallViewDidLayoutSubviews
               else { return }
         detailCollectionView.scrollToItem(at: indexPath,
-                                          at: .right,
+                                          at: .centeredHorizontally,
                                           animated: false)
         isFirstCallViewDidLayoutSubviews = false
     }
@@ -95,11 +95,10 @@ extension DetailViewController: UICollectionViewDelegate, ImageLoadable {
         else { return }
         
         if indexPath.item == photos.count - 1 {
-            loadPhotosFromServer(pageNumber: pageNumber) { (responsePhotos) in
-                guard let resPhotos = responsePhotos else { return }
+            loadPhotosFromServer(pageNumber: pageNumber) { (photos) in
                 DispatchQueue.main.async { [weak self] in
                     guard let self = self else { return }
-                    self.photos?.append(contentsOf: resPhotos)
+                    self.photos?.append(contentsOf: photos)
                     self.detailCollectionView.reloadData()
                     self.pageNumber? += 1
                 }

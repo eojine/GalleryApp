@@ -9,7 +9,7 @@ import UIKit
 
 protocol ImageLoadable: UIViewController {
     func loadPhotosFromServer(pageNumber: Int,
-                              completion: @escaping ([Photo]?) -> ())
+                              completion: @escaping ([Photo]) -> ())
     func loadImageFromURL(url: String,
                           completion: @escaping (UIImage) -> ())
 }
@@ -17,14 +17,13 @@ protocol ImageLoadable: UIViewController {
 extension ImageLoadable {
     
     func loadPhotosFromServer(pageNumber: Int,
-                              completion: @escaping ([Photo]?) -> ()) {
+                              completion: @escaping ([Photo]) -> ()) {
         PhotoService.shared.get(page: pageNumber) { [weak self] result in
             guard let self = self else { return }
             switch result {
             case .success(let photos):
                 completion(photos)
             case .failure(let error):
-                completion(.none)
                 self.showErrorAlert(error: error)
             }
         }
