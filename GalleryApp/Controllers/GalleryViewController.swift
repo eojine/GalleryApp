@@ -11,7 +11,7 @@ final class GalleryViewController: UIViewController {
     
     @IBOutlet private weak var galleryTableView: UITableView!
     
-    private var isReachedBottom = false
+    private var reachedBottom = false
     var pageNumber = 1
     private var photos: [Photo] = []
     private var currentIndexPath: IndexPath?
@@ -20,11 +20,6 @@ final class GalleryViewController: UIViewController {
         super.viewDidLoad()
         registerXib()
         appendPhotos()
-    }
-    
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        scrollToIndexPath()
     }
     
     private func registerXib() {
@@ -37,36 +32,35 @@ final class GalleryViewController: UIViewController {
     private func appendPhotos() {
         loadPhotosFromServer(pageNumber: pageNumber) { photos in
             guard let photos = photos else {
-                DispatchQueue.main.async { [weak self] in
-                    self?.displaySpinnerView(false)
-                }
+//                DispatchQueue.main.async { [weak self] in
+//                    self?.displaySpinnerView(false)
+//                }
                 return
             }
             DispatchQueue.main.async { [weak self] in
                 guard let self = self else { return }
                 self.photos.append(contentsOf: photos)
                 self.galleryTableView.reloadData()
+                self.galleryTableView.tableFooterView = nil
+                self.galleryTableView.isScrollEnabled = true
+                self.reachedBottom = false
                 self.pageNumber += 1
+                
+                print("테이블뷰 포토개수", self.photos.count)
             }
         }
     }
     
-    private func scrollToIndexPath() {
-        guard let indexPath = currentIndexPath else { return }
-        galleryTableView.scrollToRow(at: indexPath,
-                                     at: .middle,
-                                     animated: true)
-    }
-    
-    private func displaySpinnerView(_ isBottom: Bool = true) {
-        if isBottom {
-            galleryTableView.createBottomSpinnerView()
-        } else {
-            galleryTableView.tableFooterView = nil
-        }
-        isReachedBottom = isBottom
-        galleryTableView.isScrollEnabled = !isBottom
-    }
+//    private func displaySpinnerView(_ isBottom: Bool = true) {
+//
+//        if isBottom {
+//            galleryTableView.createBottomSpinnerView()
+//        } else {
+//            galleryTableView.tableFooterView = nil
+//        }
+//        isReachedBottom = isBottom
+//        galleryTableView.isScrollEnabled = !isBottom
+//    }
 
 }
 
@@ -130,7 +124,7 @@ extension GalleryViewController: UITableViewDelegate, ImageLoadable {
     }
     
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        if isReachedBottom { return }
+        if reachedBottom { return }
         
         let height = scrollView.frame.size.height
         let contentYOffset = scrollView.contentOffset.y
@@ -138,8 +132,12 @@ extension GalleryViewController: UITableViewDelegate, ImageLoadable {
         let distanceFromBottom = scrollViewHeight - contentYOffset
         
         if distanceFromBottom < height {
-            displaySpinnerView()
+            reachedBottom = true
+            galleryTableView.isScrollEnabled = false
+            galleryTableView.createBottomSpinnerView()
             appendPhotos()
+        } else {
+            reachedBottom = false
         }
     }
 
@@ -147,13 +145,20 @@ extension GalleryViewController: UITableViewDelegate, ImageLoadable {
 
 extension GalleryViewController: ScrollDelegate {
     
-    func send(photos: [Photo]) {
+    func send(photos: [Photo], pageNumber: Int) {
         self.photos = photos
+        self.pageNumber = pageNumber
         galleryTableView.reloadData()
+        
+        print("보내준 포토개수", photos.count)
     }
     
     func scrollToIndexPath(at: IndexPath) {
         currentIndexPath = at
+        reachedBottom = true
+        galleryTableView.scrollToRow(at: at,
+                                     at: .middle,
+                                     animated: false)
     }
     
 }
