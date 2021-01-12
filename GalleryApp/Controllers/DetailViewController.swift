@@ -7,7 +7,7 @@
 
 import UIKit
 
-protocol ScrollDelegate: class {
+protocol SendDataDelegate: class {
     func scrollToIndexPath(at: IndexPath)
     func send(photos: [Photo], pageNumber: Int)
 }
@@ -22,7 +22,7 @@ final class DetailViewController: UIViewController {
     var pageNumber: Int?
     var currentIndexPath: IndexPath?
     var isFirstCallViewDidLayoutSubviews = true
-    weak var delegate: ScrollDelegate?
+    weak var delegate: SendDataDelegate?
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()

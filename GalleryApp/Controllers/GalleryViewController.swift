@@ -129,7 +129,7 @@ extension GalleryViewController: UITableViewDelegate, ImageLoadable {
 
 }
 
-extension GalleryViewController: ScrollDelegate {
+extension GalleryViewController: SendDataDelegate {
     
     func send(photos: [Photo], pageNumber: Int) {
         self.photos = photos
