@@ -41,10 +41,6 @@ extension Requestable {
                 return
             }
             
-//            if let links = response.allHeaderFields["Link"] as? String {
-//                print("링크", links)
-//            }
-            
             guard let data = data else {
                 completion(.failure(.invalidData))
                 return

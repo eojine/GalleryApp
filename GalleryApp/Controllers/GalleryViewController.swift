@@ -32,24 +32,32 @@ final class GalleryViewController: UIViewController {
                                   forCellReuseIdentifier: GalleryTableViewCell.identifier)
     }
     
+}
+
+// MARK: ImageLoadable
+
+extension GalleryViewController: ImageLoadable {
+    
     private func appendPhotos() {
         guard !fetchingMore else { return }
         fetchingMore = true
         spinnerView(display: true)
         
         loadPhotosFromServer(pageNumber: pageNumber,
-                             search: isSearching ? searchBar.text : nil) { [weak self] photos in
-            guard let resultPhotos = photos else {
+                             search: isSearching ? searchBar.text : nil) { [weak self] result in
+            switch result {
+            case .success(let photos):
                 DispatchQueue.main.async {
-                    self?.galleryTableView.isScrollEnabled = true
+                    self?.displayPhotos(photos)
                     self?.spinnerView(display: false)
                 }
-                return
-            }
-            
-            DispatchQueue.main.async {
-                self?.displayPhotos(resultPhotos)
-                self?.spinnerView(display: false)
+            case .failure(let error):
+                DispatchQueue.main.async {
+                    self?.galleryTableView.isScrollEnabled = true
+                    self?.fetchingMore = false
+                    self?.spinnerView(display: false)
+                }
+                self?.showErrorAlert(error: error)
             }
         }
     }
@@ -58,6 +66,7 @@ final class GalleryViewController: UIViewController {
         self.photos.append(contentsOf: photos)
         galleryTableView.reloadData()
         fetchingMore = false
+//        reachedBottom = false
         pageNumber += 1
     }
     
@@ -68,6 +77,13 @@ final class GalleryViewController: UIViewController {
             galleryTableView.tableFooterView = nil
         }
         galleryTableView.isScrollEnabled = !display
+    }
+    
+    private func showErrorAlert(error: NetworkError) {
+        DispatchQueue.main.async { [weak self] in
+            self?.showSimpleAlert(title: "Error!",
+                                  message: error.errorToString())
+        }
     }
     
 }
@@ -102,7 +118,7 @@ extension GalleryViewController: UITableViewDataSource {
 }
 
 // MARK: UITableViewDelegate
-extension GalleryViewController: UITableViewDelegate, ImageLoadable {
+extension GalleryViewController: UITableViewDelegate {
     
     func tableView(_ tableView: UITableView,
                    didSelectRowAt indexPath: IndexPath) {
@@ -129,39 +145,28 @@ extension GalleryViewController: UITableViewDelegate, ImageLoadable {
               let url = photos[indexPath.row].urls?.regular
         else { return }
         
-        loadImageFromURL(url: url) { (image) in
-            cell.configure(user: user, photo: image)
+        ImageCacheService.shared.load(url: url) { result in
+            switch result {
+            case .success(let image):
+                cell.configure(user: user, photo: image)
+            default:
+                break
+            }
         }
+        
     }
     
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         let offsetY = scrollView.contentOffset.y
-        let contentHeight = galleryTableView.contentSize.height
+        let contentHeight = scrollView.contentSize.height
+        let height = scrollView.frame.height
         
-        if offsetY > contentHeight - scrollView.frame.height && !reachedBottom {
+        if offsetY > (contentHeight - height) && !reachedBottom {
             reachedBottom = true
             appendPhotos()
         } else if reachedBottom {
             reachedBottom = false
         }
-    }
-    
-}
-
-extension GalleryViewController: SendDataDelegate {
-    
-    func send(photos: [Photo], pageNumber: Int) {
-        self.photos = photos
-        self.pageNumber = pageNumber
-        galleryTableView.reloadData()
-    }
-    
-    func scrollToIndexPath(at: IndexPath) {
-        currentIndexPath = at
-        reachedBottom = true
-        galleryTableView.scrollToRow(at: at,
-                                     at: .middle,
-                                     animated: false)
     }
     
 }
@@ -185,6 +190,23 @@ extension GalleryViewController: UISearchBarDelegate {
         galleryTableView.reloadData()
         appendPhotos()
         searchBar.resignFirstResponder()
+    }
+    
+}
+
+extension GalleryViewController: SendDataDelegate {
+    
+    func send(photos: [Photo], pageNumber: Int) {
+        self.photos = photos
+        self.pageNumber = pageNumber
+        galleryTableView.reloadData()
+    }
+    
+    func scrollToIndexPath(at: IndexPath) {
+        currentIndexPath = at
+        galleryTableView.scrollToRow(at: at,
+                                     at: .middle,
+                                     animated: false)
     }
     
 }

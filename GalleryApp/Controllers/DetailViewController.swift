@@ -63,16 +63,21 @@ final class DetailViewController: UIViewController {
         isFirstCallViewDidLayoutSubviews = false
     }
     
+}
+
+extension DetailViewController: ImageLoadable {
     private func appendPhotos() {
         guard let pageNumber = pageNumber else { return }
         loadPhotosFromServer(pageNumber: pageNumber,
-                             search: searchText) { [weak self] photos in
-            guard let resultPhotos = photos else {
+                             search: searchText) { [weak self] result in
+            switch result {
+            case .success(let photos):
+                DispatchQueue.main.async {
+                    self?.displayPhotos(photos)
+                }
+            case .failure(let error):
                 self?.isLastPage = true
-                return
-            }
-            DispatchQueue.main.async {
-                self?.displayPhotos(resultPhotos)
+                self?.showErrorAlert(error: error)
             }
         }
     }
@@ -82,6 +87,13 @@ final class DetailViewController: UIViewController {
         detailCollectionView.reloadData()
         pageNumber? += 1
         isLastPage = false
+    }
+    
+    private func showErrorAlert(error: NetworkError) {
+        DispatchQueue.main.async { [weak self] in
+            self?.showSimpleAlert(title: "Error!",
+                                  message: error.errorToString())
+        }
     }
     
 }
@@ -106,7 +118,7 @@ extension DetailViewController: UICollectionViewDataSource {
     
 }
 
-extension DetailViewController: UICollectionViewDelegate, ImageLoadable {
+extension DetailViewController: UICollectionViewDelegate {
     
     func collectionView(_ collectionView: UICollectionView,
                         willDisplay cell: UICollectionViewCell,
@@ -117,8 +129,13 @@ extension DetailViewController: UICollectionViewDelegate, ImageLoadable {
               let url = photos[indexPath.item].urls?.regular
         else { return }
         
-        loadImageFromURL(url: url) { image in
-            cell.configure(user: user, photo: image)
+        ImageCacheService.shared.load(url: url) { result in
+            switch result {
+            case .success(let image):
+                cell.configure(user: user, photo: image)
+            default:
+                break
+            }
         }
         
         currentIndexPath = indexPath
