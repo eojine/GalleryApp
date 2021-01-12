@@ -7,9 +7,9 @@
 
 import UIKit
 
-protocol ScrollDelegate: class {
+protocol SendDataDelegate: class {
     func scrollToIndexPath(at: IndexPath)
-    func send(photos: [Photo])
+    func send(photos: [Photo], pageNumber: Int)
 }
 
 final class DetailViewController: UIViewController {
@@ -22,7 +22,7 @@ final class DetailViewController: UIViewController {
     var pageNumber: Int?
     var currentIndexPath: IndexPath?
     var isFirstCallViewDidLayoutSubviews = true
-    weak var delegate: ScrollDelegate?
+    weak var delegate: SendDataDelegate?
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
@@ -37,9 +37,10 @@ final class DetailViewController: UIViewController {
     @IBAction private func closeButtonDidTap(_ sender: UIButton) {
         dismiss(animated: true, completion: nil)
         guard let indexPath = currentIndexPath,
-              let photos = photos else { return }
+              let photos = photos,
+              let page = pageNumber else{ return }
+        delegate?.send(photos: photos, pageNumber: page)
         delegate?.scrollToIndexPath(at: indexPath)
-        delegate?.send(photos: photos)
     }
     
     private func registerXib() {
@@ -54,7 +55,7 @@ final class DetailViewController: UIViewController {
               isFirstCallViewDidLayoutSubviews
               else { return }
         detailCollectionView.scrollToItem(at: indexPath,
-                                          at: .right,
+                                          at: .centeredHorizontally,
                                           animated: false)
         isFirstCallViewDidLayoutSubviews = false
     }
@@ -94,20 +95,14 @@ extension DetailViewController: UICollectionViewDelegate, ImageLoadable {
         else { return }
         
         if indexPath.item == photos.count - 1 {
-            print("마지막")
-//            loadPhotosFromServer(pageNumber: pageNumber) { (photos) in
-//                guard let photos = photos else {
-//
-//                    return
-//                }
-//
-//                DispatchQueue.main.async { [weak self] in
-//                    guard let self = self else { return }
-//                    self.photos?.append(contentsOf: photos)
-//                    self.detailCollectionView.reloadData()
-//                    self.pageNumber? += 1
-//                }
-//            }
+            loadPhotosFromServer(pageNumber: pageNumber) { (photos) in
+                DispatchQueue.main.async { [weak self] in
+                    guard let self = self else { return }
+                    self.photos?.append(contentsOf: photos)
+                    self.detailCollectionView.reloadData()
+                    self.pageNumber? += 1
+                }
+            }
         }
         
         loadImageFromURL(url: url) { (image) in
