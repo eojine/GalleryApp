@@ -18,13 +18,14 @@ final class DetailViewController: UIViewController {
     
     @IBOutlet private weak var detailCollectionView: UICollectionView!
     
-    var photos: [Photo]?
-    var pageNumber: Int?
-    var isLastPage = false
-    var search: String?
-    var currentIndexPath: IndexPath?
-    var isFirstCallViewDidLayoutSubviews = true
     weak var delegate: SendDataDelegate?
+    var photos: [Photo]?
+    var currentIndexPath: IndexPath?
+    var pageNumber: Int?
+    var searchText: String?
+    
+    private var isLastPage = false
+    private var isFirstCallViewDidLayoutSubviews = true
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
@@ -40,7 +41,7 @@ final class DetailViewController: UIViewController {
         dismiss(animated: true, completion: nil)
         guard let indexPath = currentIndexPath,
               let photos = photos,
-              let page = pageNumber else{ return }
+              let page = pageNumber else { return }
         delegate?.send(photos: photos, pageNumber: page)
         delegate?.scrollToIndexPath(at: indexPath)
     }
@@ -60,6 +61,27 @@ final class DetailViewController: UIViewController {
                                           at: .centeredHorizontally,
                                           animated: false)
         isFirstCallViewDidLayoutSubviews = false
+    }
+    
+    private func appendPhotos() {
+        guard let pageNumber = pageNumber else { return }
+        loadPhotosFromServer(pageNumber: pageNumber,
+                             search: searchText) { [weak self] photos in
+            guard let resultPhotos = photos else {
+                self?.isLastPage = true
+                return
+            }
+            DispatchQueue.main.async {
+                self?.displayPhotos(resultPhotos)
+            }
+        }
+    }
+    
+    private func displayPhotos(_ photos: [Photo]) {
+        self.photos?.append(contentsOf: photos)
+        detailCollectionView.reloadData()
+        pageNumber? += 1
+        isLastPage = false
     }
     
 }
@@ -92,37 +114,17 @@ extension DetailViewController: UICollectionViewDelegate, ImageLoadable {
         guard let cell = cell as? DetailCollectionViewCell,
               let photos = photos,
               let user = photos[indexPath.item].user?.name,
-              let url = photos[indexPath.item].urls?.regular,
-              let pageNumber = pageNumber
+              let url = photos[indexPath.item].urls?.regular
         else { return }
         
-        
-        loadImageFromURL(url: url) { (image) in
+        loadImageFromURL(url: url) { image in
             cell.configure(user: user, photo: image)
         }
         
         currentIndexPath = indexPath
         
         if indexPath.item == photos.count - 1 && !isLastPage {
-            loadPhotosFromServer(pageNumber: pageNumber,
-                                 search: search) { [weak self] (photos) in
-                
-                guard let self = self else { return }
-                guard let resultPhotos = photos else {
-                    DispatchQueue.main.async {
-                        self.detailCollectionView.isScrollEnabled = true
-                        self.isLastPage = true
-                    }
-                    return
-                }
-                
-                DispatchQueue.main.async {
-                    self.photos?.append(contentsOf: resultPhotos)
-                    self.detailCollectionView.reloadData()
-                    self.pageNumber? += 1
-                    self.isLastPage = false
-                }
-            }
+            appendPhotos()
         }
     }
     

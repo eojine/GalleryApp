@@ -23,7 +23,7 @@ extension PhotoEndpoint: EndpointType {
             } else {
                 getURL += "/photos?page=\(page)"
             }
-            return getURL + "&client_id=\(Token.accessToken)"
+            return getURL + "&per_page=30&client_id=\(Token.accessToken)"
         }
     }
     

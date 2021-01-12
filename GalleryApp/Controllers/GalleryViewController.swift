@@ -12,12 +12,12 @@ final class GalleryViewController: UIViewController {
     @IBOutlet private weak var galleryTableView: UITableView!
     @IBOutlet private weak var searchBar: UISearchBar!
     
-    private var reachedBottom = false
-    private var fetchingMore = false
-    private var pageNumber = 1
     private var photos: [Photo] = []
     private var currentIndexPath: IndexPath?
+    private var pageNumber = 1
     private var isSearching = false
+    private var reachedBottom = false
+    private var fetchingMore = false
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -32,28 +32,33 @@ final class GalleryViewController: UIViewController {
                                   forCellReuseIdentifier: GalleryTableViewCell.identifier)
     }
     
-    private func appendPhotos(searchText: String? = nil) {
+    private func appendPhotos() {
+        guard !fetchingMore else { return }
         fetchingMore = true
         spinnerView(display: true)
+        
         loadPhotosFromServer(pageNumber: pageNumber,
-                             search: searchText) { [weak self] photos in
-            guard let self = self else { return }
+                             search: isSearching ? searchBar.text : nil) { [weak self] photos in
             guard let resultPhotos = photos else {
                 DispatchQueue.main.async {
-                    self.galleryTableView.isScrollEnabled = true
-                    self.spinnerView(display: false)
+                    self?.galleryTableView.isScrollEnabled = true
+                    self?.spinnerView(display: false)
                 }
                 return
             }
             
             DispatchQueue.main.async {
-                self.photos.append(contentsOf: resultPhotos)
-                self.galleryTableView.reloadData()
-                self.fetchingMore = false
-                self.pageNumber += 1
-                self.spinnerView(display: false)
+                self?.displayPhotos(resultPhotos)
+                self?.spinnerView(display: false)
             }
         }
+    }
+    
+    private func displayPhotos(_ photos: [Photo]) {
+        self.photos.append(contentsOf: photos)
+        galleryTableView.reloadData()
+        fetchingMore = false
+        pageNumber += 1
     }
     
     private func spinnerView(display: Bool) {
@@ -105,14 +110,14 @@ extension GalleryViewController: UITableViewDelegate, ImageLoadable {
                 .instantiateViewController(withIdentifier: DetailViewController.identifier)
                 as? DetailViewController
         else { return }
-        detailViewController.modalPresentationStyle = .fullScreen
+        
+        detailViewController.searchText = isSearching ? searchBar.text : nil
         detailViewController.photos = photos
         detailViewController.pageNumber = pageNumber
-        if isSearching {
-            detailViewController.search = searchBar.text
-        }
         detailViewController.currentIndexPath = indexPath
         detailViewController.delegate = self
+        detailViewController.modalPresentationStyle = .fullScreen
+        
         present(detailViewController, animated: true)
     }
     
@@ -133,21 +138,11 @@ extension GalleryViewController: UITableViewDelegate, ImageLoadable {
         let offsetY = scrollView.contentOffset.y
         let contentHeight = galleryTableView.contentSize.height
         
-        if offsetY > contentHeight - scrollView.frame.height {
-            if !reachedBottom {
-                reachedBottom = true
-                if !fetchingMore {
-                    print("여기?????")
-                    if isSearching {
-                        appendPhotos(searchText: searchBar.text)
-                    } else {
-                        appendPhotos()
-                    }
-                    
-                }
-            } else {
-                reachedBottom = false
-            }
+        if offsetY > contentHeight - scrollView.frame.height && !reachedBottom {
+            reachedBottom = true
+            appendPhotos()
+        } else if reachedBottom {
+            reachedBottom = false
         }
     }
     
@@ -176,19 +171,19 @@ extension GalleryViewController: UISearchBarDelegate {
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
         searchBar.text = ""
         isSearching = false
-        photos.removeAll()
-        pageNumber = 1
-        galleryTableView.reloadData()
-        appendPhotos()
-        searchBar.resignFirstResponder()
+        displaySearchPhotos()
     }
     
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
         isSearching = true
+        displaySearchPhotos()
+    }
+    
+    private func displaySearchPhotos() {
         photos.removeAll()
         pageNumber = 1
         galleryTableView.reloadData()
-        appendPhotos(searchText: searchBar.text)
+        appendPhotos()
         searchBar.resignFirstResponder()
     }
     
