@@ -13,8 +13,7 @@ struct Search: Codable {
     let photos: [Photo]?
     
     enum CodingKeys: String, CodingKey {
-        case total
-        case totalPages = "total_pages"
+        case total, totalPages
         case photos = "results"
     }
 }
