@@ -11,7 +11,6 @@ struct Photo: Codable {
     let id: String?
     let width: Int?
     let height: Int?
-    let color: String?
     let urls: Urls?
     let user: User?
     
