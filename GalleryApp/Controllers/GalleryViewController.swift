@@ -13,9 +13,11 @@ final class GalleryViewController: UIViewController {
     @IBOutlet private weak var searchBar: UISearchBar!
     
     private var reachedBottom = false
+    private var fetchingMore = false
     private var pageNumber = 1
     private var photos: [Photo] = []
     private var currentIndexPath: IndexPath?
+    private var isSearching = false
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -31,13 +33,23 @@ final class GalleryViewController: UIViewController {
     }
     
     private func appendPhotos(searchText: String? = nil) {
+        fetchingMore = true
+        spinnerView(display: true)
         loadPhotosFromServer(pageNumber: pageNumber,
-                             search: searchText) { photos in
-            DispatchQueue.main.async { [weak self] in
-                guard let self = self else { return }
-                self.photos.append(contentsOf: photos)
+                             search: searchText) { [weak self] photos in
+            guard let self = self else { return }
+            guard let resultPhotos = photos else {
+                DispatchQueue.main.async {
+                    self.galleryTableView.isScrollEnabled = true
+                    self.spinnerView(display: false)
+                }
+                return
+            }
+            
+            DispatchQueue.main.async {
+                self.photos.append(contentsOf: resultPhotos)
                 self.galleryTableView.reloadData()
-                self.reachedBottom = false
+                self.fetchingMore = false
                 self.pageNumber += 1
                 self.spinnerView(display: false)
             }
@@ -52,7 +64,7 @@ final class GalleryViewController: UIViewController {
         }
         galleryTableView.isScrollEnabled = !display
     }
-
+    
 }
 
 // MARK: UITableViewDataSource
@@ -96,7 +108,9 @@ extension GalleryViewController: UITableViewDelegate, ImageLoadable {
         detailViewController.modalPresentationStyle = .fullScreen
         detailViewController.photos = photos
         detailViewController.pageNumber = pageNumber
-        detailViewController.search = searchBar.text
+        if isSearching {
+            detailViewController.search = searchBar.text
+        }
         detailViewController.currentIndexPath = indexPath
         detailViewController.delegate = self
         present(detailViewController, animated: true)
@@ -116,20 +130,27 @@ extension GalleryViewController: UITableViewDelegate, ImageLoadable {
     }
     
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        if reachedBottom { return }
+        let offsetY = scrollView.contentOffset.y
+        let contentHeight = galleryTableView.contentSize.height
         
-        let height = scrollView.frame.size.height
-        let contentYOffset = scrollView.contentOffset.y
-        let scrollViewHeight = scrollView.contentSize.height
-        let distanceFromBottom = scrollViewHeight - contentYOffset
-        
-        if distanceFromBottom < height {
-            reachedBottom = true
-            spinnerView(display: true)
-            appendPhotos()
+        if offsetY > contentHeight - scrollView.frame.height {
+            if !reachedBottom {
+                reachedBottom = true
+                if !fetchingMore {
+                    print("여기?????")
+                    if isSearching {
+                        appendPhotos(searchText: searchBar.text)
+                    } else {
+                        appendPhotos()
+                    }
+                    
+                }
+            } else {
+                reachedBottom = false
+            }
         }
     }
-
+    
 }
 
 extension GalleryViewController: SendDataDelegate {
@@ -146,6 +167,29 @@ extension GalleryViewController: SendDataDelegate {
         galleryTableView.scrollToRow(at: at,
                                      at: .middle,
                                      animated: false)
+    }
+    
+}
+
+extension GalleryViewController: UISearchBarDelegate {
+    
+    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
+        searchBar.text = ""
+        isSearching = false
+        photos.removeAll()
+        pageNumber = 1
+        galleryTableView.reloadData()
+        appendPhotos()
+        searchBar.resignFirstResponder()
+    }
+    
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        isSearching = true
+        photos.removeAll()
+        pageNumber = 1
+        galleryTableView.reloadData()
+        appendPhotos(searchText: searchBar.text)
+        searchBar.resignFirstResponder()
     }
     
 }

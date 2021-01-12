@@ -18,6 +18,15 @@ class SearchService: Requestable {
              completion: @escaping (Result<NetworkData, NetworkError>) -> Void) {
         let photoEndpoint: PhotoEndpoint = .get(page: page, search: search)
         request(photoEndpoint) { result in
+            switch result {
+            case .success(let data):
+                if data.totalPages ?? 0 < page {
+                    completion(.failure(.invalidPageNumber))
+                    return
+                }
+            default:
+                break
+            }
             completion(result)
         }
     }

@@ -19,7 +19,7 @@ extension PhotoEndpoint: EndpointType {
         case .get(let page, let search):
             var getURL = baseUrl
             if let search = search {
-                getURL += "/search/photos?query=\(search)"
+                getURL += "/search/photos?query=\(search)&page=\(page)"
             } else {
                 getURL += "/photos?page=\(page)"
             }

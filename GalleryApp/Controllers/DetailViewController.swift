@@ -20,6 +20,7 @@ final class DetailViewController: UIViewController {
     
     var photos: [Photo]?
     var pageNumber: Int?
+    var isLastPage = false
     var search: String?
     var currentIndexPath: IndexPath?
     var isFirstCallViewDidLayoutSubviews = true
@@ -95,23 +96,34 @@ extension DetailViewController: UICollectionViewDelegate, ImageLoadable {
               let pageNumber = pageNumber
         else { return }
         
-        if indexPath.item == photos.count - 1 {
-            loadPhotosFromServer(pageNumber: pageNumber,
-                                 search: search) { (photos) in
-                DispatchQueue.main.async { [weak self] in
-                    guard let self = self else { return }
-                    self.photos?.append(contentsOf: photos)
-                    self.detailCollectionView.reloadData()
-                    self.pageNumber? += 1
-                }
-            }
-        }
         
         loadImageFromURL(url: url) { (image) in
             cell.configure(user: user, photo: image)
         }
         
         currentIndexPath = indexPath
+        
+        if indexPath.item == photos.count - 1 && !isLastPage {
+            loadPhotosFromServer(pageNumber: pageNumber,
+                                 search: search) { [weak self] (photos) in
+                
+                guard let self = self else { return }
+                guard let resultPhotos = photos else {
+                    DispatchQueue.main.async {
+                        self.detailCollectionView.isScrollEnabled = true
+                        self.isLastPage = true
+                    }
+                    return
+                }
+                
+                DispatchQueue.main.async {
+                    self.photos?.append(contentsOf: resultPhotos)
+                    self.detailCollectionView.reloadData()
+                    self.pageNumber? += 1
+                    self.isLastPage = false
+                }
+            }
+        }
     }
     
 }
