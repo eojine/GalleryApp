@@ -20,6 +20,7 @@ final class DetailViewController: UIViewController {
     
     var photos: [Photo]?
     var pageNumber: Int?
+    var search: String?
     var currentIndexPath: IndexPath?
     var isFirstCallViewDidLayoutSubviews = true
     weak var delegate: SendDataDelegate?
@@ -95,7 +96,8 @@ extension DetailViewController: UICollectionViewDelegate, ImageLoadable {
         else { return }
         
         if indexPath.item == photos.count - 1 {
-            loadPhotosFromServer(pageNumber: pageNumber) { (photos) in
+            loadPhotosFromServer(pageNumber: pageNumber,
+                                 search: search) { (photos) in
                 DispatchQueue.main.async { [weak self] in
                     guard let self = self else { return }
                     self.photos?.append(contentsOf: photos)
