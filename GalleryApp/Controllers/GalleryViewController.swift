@@ -10,6 +10,7 @@ import UIKit
 final class GalleryViewController: UIViewController {
     
     @IBOutlet private weak var galleryTableView: UITableView!
+    @IBOutlet private weak var searchBar: UISearchBar!
     
     private var reachedBottom = false
     private var pageNumber = 1
@@ -29,8 +30,9 @@ final class GalleryViewController: UIViewController {
                                   forCellReuseIdentifier: GalleryTableViewCell.identifier)
     }
     
-    private func appendPhotos() {
-        loadPhotosFromServer(pageNumber: pageNumber) { photos in
+    private func appendPhotos(searchText: String? = nil) {
+        loadPhotosFromServer(pageNumber: pageNumber,
+                             search: searchText) { photos in
             DispatchQueue.main.async { [weak self] in
                 guard let self = self else { return }
                 self.photos.append(contentsOf: photos)
@@ -94,6 +96,7 @@ extension GalleryViewController: UITableViewDelegate, ImageLoadable {
         detailViewController.modalPresentationStyle = .fullScreen
         detailViewController.photos = photos
         detailViewController.pageNumber = pageNumber
+        detailViewController.search = searchBar.text
         detailViewController.currentIndexPath = indexPath
         detailViewController.delegate = self
         present(detailViewController, animated: true)

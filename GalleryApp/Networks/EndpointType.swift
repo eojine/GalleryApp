@@ -13,6 +13,6 @@ protocol EndpointType {
 
 extension EndpointType {
     var baseUrl: String {
-        return "https://api.unsplash.com/photos?client_id=\(Token.accessToken)"
+        return "https://api.unsplash.com"
     }
 }
