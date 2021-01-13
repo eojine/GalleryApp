@@ -32,7 +32,7 @@ extension Requestable {
             
             if error != nil {
                 completion(.failure(.failedRequest))
-                return
+                return 
             }
             
             guard let response = response as? HTTPURLResponse,

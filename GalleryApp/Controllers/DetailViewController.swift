@@ -65,7 +65,8 @@ final class DetailViewController: UIViewController {
     
 }
 
-extension DetailViewController: ImageLoadable {
+extension DetailViewController: DataLoadable {
+    
     private func appendPhotos() {
         guard let pageNumber = pageNumber else { return }
         loadPhotosFromServer(pageNumber: pageNumber,

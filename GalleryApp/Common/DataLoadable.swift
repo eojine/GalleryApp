@@ -1,5 +1,5 @@
 //
-//  ImageLoadableProtocol.swift
+//  DataLoadable.swift
 //  GalleryApp
 //
 //  Created by Eojin Yang on 2021/01/11.
@@ -7,13 +7,13 @@
 
 import UIKit
 
-protocol ImageLoadable: UIViewController {
+protocol DataLoadable {
     func loadPhotosFromServer(pageNumber: Int,
                               search: String?,
                               completion: @escaping (Result<[Photo], NetworkError>) -> ())
 }
 
-extension ImageLoadable {
+extension DataLoadable {
     
     func loadPhotosFromServer(pageNumber: Int,
                               search: String?,
@@ -24,6 +24,7 @@ extension ImageLoadable {
                 switch result {
                 case .success(let result):
                     guard let photos = result.photos else {
+                        // Search요청을 보내고 데이터를 받았지만, photos가 없을 때
                         completion(.failure(.invalidResponse))
                         return
                     }

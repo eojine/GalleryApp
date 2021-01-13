@@ -12,6 +12,7 @@ final class ImageCacheService {
     
     static let shared = ImageCacheService()
     private let cachedImages = NSCache<NSString, UIImage>()
+    private init() { }
     
     func load(url: String,
               completion: @escaping (Result<UIImage, NetworkError>) -> ()) {
@@ -30,6 +31,12 @@ final class ImageCacheService {
         URLSession.shared.dataTask(with: URL) { [weak self] (data, response, error) in
             if error != nil {
                 completion(.failure(.failedRequest))
+                return
+            }
+            
+            guard let response = response as? HTTPURLResponse,
+                  (200...299).contains(response.statusCode) else {
+                completion(.failure(.invalidResponse))
                 return
             }
             

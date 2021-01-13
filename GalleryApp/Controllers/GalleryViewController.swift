@@ -36,12 +36,12 @@ final class GalleryViewController: UIViewController {
 
 // MARK: ImageLoadable
 
-extension GalleryViewController: ImageLoadable {
+extension GalleryViewController: DataLoadable {
     
     private func appendPhotos() {
         guard !fetchingMore else { return }
         fetchingMore = true
-        spinnerView(display: true)
+        galleryTableView.spinnerView(display: true)
         
         loadPhotosFromServer(pageNumber: pageNumber,
                              search: isSearching ? searchBar.text : nil) { [weak self] result in
@@ -49,13 +49,13 @@ extension GalleryViewController: ImageLoadable {
             case .success(let photos):
                 DispatchQueue.main.async {
                     self?.displayPhotos(photos)
-                    self?.spinnerView(display: false)
+                    self?.galleryTableView.spinnerView(display: false)
                 }
             case .failure(let error):
                 DispatchQueue.main.async {
                     self?.galleryTableView.isScrollEnabled = true
                     self?.fetchingMore = false
-                    self?.spinnerView(display: false)
+                    self?.galleryTableView.spinnerView(display: false)
                 }
                 self?.showErrorAlert(error: error)
             }
@@ -66,19 +66,9 @@ extension GalleryViewController: ImageLoadable {
         self.photos.append(contentsOf: photos)
         galleryTableView.reloadData()
         fetchingMore = false
-//        reachedBottom = false
         pageNumber += 1
     }
-    
-    private func spinnerView(display: Bool) {
-        if display {
-            galleryTableView.createBottomSpinnerView()
-        } else {
-            galleryTableView.tableFooterView = nil
-        }
-        galleryTableView.isScrollEnabled = !display
-    }
-    
+
     private func showErrorAlert(error: NetworkError) {
         DispatchQueue.main.async { [weak self] in
             self?.showSimpleAlert(title: "Error!",

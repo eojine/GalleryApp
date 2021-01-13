@@ -9,7 +9,16 @@ import UIKit
 
 extension UITableView {
     
-    func createBottomSpinnerView() {
+    func spinnerView(display: Bool) {
+        if display {
+            self.createBottomSpinnerView()
+        } else {
+            self.tableFooterView = nil
+        }
+        self.isScrollEnabled = !display
+    }
+    
+    private func createBottomSpinnerView() {
         let footerView = UIView(frame: CGRect(x: 0,
                                               y: 0,
                                               width: self.frame.size.width,

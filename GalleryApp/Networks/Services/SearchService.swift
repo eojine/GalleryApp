@@ -7,11 +7,11 @@
 
 import Foundation
 
-class SearchService: Requestable {
+final class SearchService: Requestable {
     
     typealias NetworkData = Search
     static let shared = SearchService()
-    private init() {}
+    private init() { }
     
     func get(page: Int,
              search: String,
@@ -20,7 +20,13 @@ class SearchService: Requestable {
         request(photoEndpoint) { result in
             switch result {
             case .success(let data):
-                if data.totalPages ?? 0 < page {
+                // 리퀘스트에 성공했지만, 필요한 데이터가 없을 때
+                guard let totalPages = data.totalPages else {
+                    completion(.failure(.invalidResponse))
+                    return
+                }
+                // 전체 페이지가 검색한 페이지보다 작을 때
+                if totalPages < page {
                     completion(.failure(.invalidPageNumber))
                     return
                 }

@@ -7,11 +7,11 @@
 
 import Foundation
 
-class PhotoService: Requestable {
+final class PhotoService: Requestable {
     
     typealias NetworkData = [Photo]
     static let shared = PhotoService()
-    private init() {}
+    private init() { }
     
     func get(page: Int,
              completion: @escaping (Result<NetworkData, NetworkError>) -> Void) {
