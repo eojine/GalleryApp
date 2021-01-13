@@ -15,7 +15,7 @@ struct Photo: Codable {
     let user: User?
     
     struct Urls: Codable {
-        let regular: String?
+        let raw: String?
     }
     
     struct User: Codable {

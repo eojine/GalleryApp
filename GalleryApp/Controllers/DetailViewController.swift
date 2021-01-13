@@ -149,10 +149,14 @@ extension DetailViewController: UICollectionViewDelegate {
         guard let cell = cell as? DetailCollectionViewCell,
               let photos = photos,
               let user = photos[indexPath.item].user?.name,
-              let url = photos[indexPath.item].urls?.regular
+              let url = photos[indexPath.item].urls?.raw
         else { return }
         
-        ImageCacheService.shared.load(url: url) { result in
+        let width = Int(UIScreen.main.bounds.width)
+        let dpr = Int(UIScreen.main.scale)
+        ImageCacheService.shared.load(url: url,
+                                      width: width,
+                                      dpr: dpr) { result in
             switch result {
             case .success(let image):
                 cell.configure(user: user, photo: image)

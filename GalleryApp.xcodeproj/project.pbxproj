@@ -162,8 +162,8 @@
 				35A119A625A833AA008C31EA /* Views */,
 				35A119A725A833E6008C31EA /* Storyboards */,
 				35A119F125A84CEE008C31EA /* Networks */,
-				350E083D25AA3E3800AB68DE /* Extensions */,
 				35554E2025AED2DE006D022A /* Common */,
+				350E083D25AA3E3800AB68DE /* Extensions */,
 				35A1199D25A830C4008C31EA /* Supporting Files */,
 			);
 			path = GalleryApp;

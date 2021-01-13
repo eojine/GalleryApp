@@ -150,11 +150,14 @@ extension GalleryViewController: UITableViewDelegate {
                    forRowAt indexPath: IndexPath) {
         guard let cell = cell as? GalleryTableViewCell,
               let user = photos[indexPath.row].user?.name,
-              let url = photos[indexPath.row].urls?.regular
+              let url = photos[indexPath.row].urls?.raw
         else { return }
         
-        // 이미지 받아와서 cell configure로 넘기기
-        ImageCacheService.shared.load(url: url) { result in
+        let width = Int(UIScreen.main.bounds.width)
+        let dpr = Int(UIScreen.main.scale)
+        ImageCacheService.shared.load(url: url,
+                                      width: width,
+                                      dpr: dpr) { result in
             switch result {
             case .success(let image):
                 cell.configure(user: user, photo: image)
