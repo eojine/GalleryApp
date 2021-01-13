@@ -15,16 +15,9 @@ final class ImageCacheService {
     private init() { }
     
     func load(url: String,
-              width: Int,
-              dpr: Int,
               completion: @escaping (Result<UIImage, NetworkError>) -> ()) {
         
-        let quality = 75
-        let file = "jpg"
-        let fit = "max"
-        let optionURL = url + "&w=\(width)&dpr=\(dpr)&q=\(quality)&fit=\(fit)&fm=\(file)"
-        
-        let cacheKey = NSString(string: optionURL)
+        let cacheKey = NSString(string: url)
         guard let URL = URL(string: url) else {
             completion(.failure(.invalidURL))
             return

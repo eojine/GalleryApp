@@ -78,7 +78,13 @@ extension GalleryViewController: DataLoadable {
     /// 받아온 photos 뿌려주고, pageNumber올리는 함수
     private func displayPhotos(_ photos: [Photo]) {
         self.photos.append(contentsOf: photos)
-        galleryTableView.reloadData()
+        galleryTableView.performBatchUpdates({
+            (self.photos.count - photos.count ..< self.photos.count).forEach { (row) in
+                self.galleryTableView.insertRows(at: [IndexPath(row: row,
+                                                                section: 0)],
+                                                 with: .automatic)
+            }
+        })
         fetchingMore = false
         pageNumber += 1
     }
@@ -155,14 +161,10 @@ extension GalleryViewController: UITableViewDelegate {
                    forRowAt indexPath: IndexPath) {
         guard let cell = cell as? GalleryTableViewCell,
               let user = photos[indexPath.row].user?.name,
-              let url = photos[indexPath.row].urls?.raw
+              let url = photos[indexPath.row].urls?.regular
         else { return }
         
-        let width = Int(UIScreen.main.bounds.width)
-        let dpr = Int(UIScreen.main.scale)
-        ImageCacheService.shared.load(url: url,
-                                      width: width,
-                                      dpr: dpr) { result in
+        ImageCacheService.shared.load(url: url) { result in
             switch result {
             case .success(let image):
                 cell.configure(user: user, photo: image)
