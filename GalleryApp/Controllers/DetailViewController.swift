@@ -29,6 +29,7 @@ final class DetailViewController: UIViewController {
     var searchText: String?
     
     private var isLastPage = false
+    private var displayAlert = false
     private var isFirstCallViewDidLayoutSubviews = true
     
     // MARK: - Life Cycle
@@ -90,7 +91,9 @@ extension DetailViewController: DataLoadable {
                 }
             case .failure(let error):
                 self?.isLastPage = true
-                self?.showErrorAlert(error: error)
+                DispatchQueue.main.async {
+                    self?.showErrorAlert(error: error)
+                }
             }
         }
     }
@@ -104,9 +107,11 @@ extension DetailViewController: DataLoadable {
     }
     
     private func showErrorAlert(error: NetworkError) {
-        DispatchQueue.main.async { [weak self] in
-            self?.showSimpleAlert(title: "Error!",
-                                  message: error.errorToString())
+        if displayAlert { return }
+        displayAlert = true
+        showSimpleAlert(title: "Error!",
+                        message: error.errorToString()) { [weak self] in
+            self?.displayAlert = false
         }
     }
     
@@ -158,10 +163,14 @@ extension DetailViewController: UICollectionViewDelegate {
         
         currentIndexPath = indexPath
         
-        // 바닥에 닿고, 이미 닿아있던 상태가 이나리면 appendPhotos()호출
-        if indexPath.item == photos.count - 1 && !isLastPage {
+        if isBottom(indexPath, photos) {
             appendPhotos()
         }
+    }
+    
+    private func isBottom(_ indexPath: IndexPath,
+                          _ photos: [Photo])  -> Bool {
+        return indexPath.item + 1 == photos.count && !isLastPage
     }
     
 }

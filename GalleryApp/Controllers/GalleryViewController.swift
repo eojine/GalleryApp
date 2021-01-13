@@ -20,8 +20,8 @@ final class GalleryViewController: UIViewController {
     private var currentIndexPath: IndexPath?
     private var pageNumber = 1
     private var isSearching = false
-    private var reachedBottom = false
     private var fetchingMore = false
+    private var displayAlert = false
     
     // MARK: - Life Cycle
     
@@ -80,9 +80,13 @@ extension GalleryViewController: DataLoadable {
 
     /// Alert 띄우는 함수
     private func showErrorAlert(error: NetworkError) {
+        if displayAlert { return }
+        displayAlert = true
         DispatchQueue.main.async { [weak self] in
             self?.showSimpleAlert(title: "Error!",
-                                  message: error.errorToString())
+                                  message: error.errorToString()) {
+                self?.displayAlert = false
+            }
         }
     }
     
@@ -159,20 +163,14 @@ extension GalleryViewController: UITableViewDelegate {
             }
         }
         
+        if isBottom(indexPath, photos) {
+            appendPhotos()
+        }
     }
     
-    func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        let offsetY = scrollView.contentOffset.y
-        let contentHeight = scrollView.contentSize.height
-        let height = scrollView.frame.height
-        
-        // 스크롤뷰가 바닥에 닿았고, 지금 바닥에 닿아있는 상태가 아닐 때
-        if offsetY > (contentHeight - height) && !reachedBottom {
-            reachedBottom = true
-            appendPhotos()
-        } else if reachedBottom {
-            reachedBottom = false
-        }
+    private func isBottom(_ indexPath: IndexPath,
+                          _ photos: [Photo])  -> Bool {
+        return indexPath.row + 1 == photos.count
     }
     
 }
