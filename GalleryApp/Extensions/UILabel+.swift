@@ -9,6 +9,7 @@ import UIKit
 
 extension UILabel {
     
+    /// label에 shadow 생성
     func dropShadow(radius: CGFloat, opacity: Float, offset: CGSize) {
         self.layer.masksToBounds = false
         self.layer.shadowRadius = radius

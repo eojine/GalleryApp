@@ -26,6 +26,7 @@ struct Photo: Codable {
 
 extension Photo {
     
+    /// 디바이스 width 받아서 photo height 결정하는 함수
     func photoHeightForDevice(_ deviceWidth: Float) -> Float? {
         guard let width = self.width,
               let height = self.height else { return nil}

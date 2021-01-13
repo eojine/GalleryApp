@@ -9,6 +9,7 @@ import UIKit
 
 extension UIViewController {
     
+    /// OK만 있는 Alert 생성하는 함수
     func showSimpleAlert(title : String,
                          message : String) {
         let alert = UIAlertController(title: title,

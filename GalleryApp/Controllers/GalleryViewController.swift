@@ -9,8 +9,12 @@ import UIKit
 
 final class GalleryViewController: UIViewController {
     
+    // MARK: - IBOutlets
+    
     @IBOutlet private weak var galleryTableView: UITableView!
     @IBOutlet private weak var searchBar: UISearchBar!
+    
+    // MARK: - Properties
     
     private var photos: [Photo] = []
     private var currentIndexPath: IndexPath?
@@ -19,11 +23,15 @@ final class GalleryViewController: UIViewController {
     private var reachedBottom = false
     private var fetchingMore = false
     
+    // MARK: - Life Cycle
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         registerXib()
         appendPhotos()
     }
+    
+    // MARK: - Methods
     
     private func registerXib() {
         let cellNibName = UINib(nibName: GalleryTableViewCell.identifier,
@@ -34,7 +42,7 @@ final class GalleryViewController: UIViewController {
     
 }
 
-// MARK: ImageLoadable
+// MARK: DataLoadable
 
 extension GalleryViewController: DataLoadable {
     
@@ -62,6 +70,7 @@ extension GalleryViewController: DataLoadable {
         }
     }
     
+    /// 받아온 photos 뿌려주고, pageNumber올리는 함수
     private func displayPhotos(_ photos: [Photo]) {
         self.photos.append(contentsOf: photos)
         galleryTableView.reloadData()
@@ -69,6 +78,7 @@ extension GalleryViewController: DataLoadable {
         pageNumber += 1
     }
 
+    /// Alert 띄우는 함수
     private func showErrorAlert(error: NetworkError) {
         DispatchQueue.main.async { [weak self] in
             self?.showSimpleAlert(title: "Error!",
@@ -79,6 +89,7 @@ extension GalleryViewController: DataLoadable {
 }
 
 // MARK: UITableViewDataSource
+
 extension GalleryViewController: UITableViewDataSource {
     
     func tableView(_ tableView: UITableView,
@@ -87,6 +98,7 @@ extension GalleryViewController: UITableViewDataSource {
         guard let height = photos[indexPath.row].photoHeightForDevice(deviceWidth)
         else { return 0 }
         let cellHeight = CGFloat(height)
+        // 계산된 셀 높이 테이블 뷰 셀 높이로 지정
         return cellHeight
     }
     
@@ -108,6 +120,7 @@ extension GalleryViewController: UITableViewDataSource {
 }
 
 // MARK: UITableViewDelegate
+
 extension GalleryViewController: UITableViewDelegate {
     
     func tableView(_ tableView: UITableView,
@@ -117,6 +130,7 @@ extension GalleryViewController: UITableViewDelegate {
                 as? DetailViewController
         else { return }
         
+        // detailViewController에 필요한 data 주입
         detailViewController.searchText = isSearching ? searchBar.text : nil
         detailViewController.photos = photos
         detailViewController.pageNumber = pageNumber
@@ -135,6 +149,7 @@ extension GalleryViewController: UITableViewDelegate {
               let url = photos[indexPath.row].urls?.regular
         else { return }
         
+        // 이미지 받아와서 cell configure로 넘기기
         ImageCacheService.shared.load(url: url) { result in
             switch result {
             case .success(let image):
@@ -151,6 +166,7 @@ extension GalleryViewController: UITableViewDelegate {
         let contentHeight = scrollView.contentSize.height
         let height = scrollView.frame.height
         
+        // 스크롤뷰가 바닥에 닿았고, 지금 바닥에 닿아있는 상태가 아닐 때
         if offsetY > (contentHeight - height) && !reachedBottom {
             reachedBottom = true
             appendPhotos()
@@ -163,17 +179,20 @@ extension GalleryViewController: UITableViewDelegate {
 
 extension GalleryViewController: UISearchBarDelegate {
     
+    /// 취소 버튼이 클릭됐을때 함수
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
         searchBar.text = ""
         isSearching = false
         displaySearchPhotos()
     }
     
+    /// Search 버튼이 클릭됐을때 함수
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
         isSearching = true
         displaySearchPhotos()
     }
     
+    /// Search하기 전에 tableview 비우고, appendPhotos()하는 함수
     private func displaySearchPhotos() {
         photos.removeAll()
         pageNumber = 1
@@ -186,12 +205,14 @@ extension GalleryViewController: UISearchBarDelegate {
 
 extension GalleryViewController: SendDataDelegate {
     
+    /// DetailViewController에서 바뀐 데이터를 받아와서 GalleryViewController에 넣는 함수
     func send(photos: [Photo], pageNumber: Int) {
         self.photos = photos
         self.pageNumber = pageNumber
         galleryTableView.reloadData()
     }
     
+    /// DetailViewController의 indexPath 를 GalleryViewController에 넣고, Scroll하는 함수
     func scrollToIndexPath(at: IndexPath) {
         currentIndexPath = at
         galleryTableView.scrollToRow(at: at,

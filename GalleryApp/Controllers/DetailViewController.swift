@@ -16,7 +16,11 @@ final class DetailViewController: UIViewController {
     
     static let identifier = String(describing: DetailViewController.self)
     
+    // MARK: - IBOutlets
+    
     @IBOutlet private weak var detailCollectionView: UICollectionView!
+    
+    // MARK: - Properties
     
     weak var delegate: SendDataDelegate?
     var photos: [Photo]?
@@ -26,6 +30,8 @@ final class DetailViewController: UIViewController {
     
     private var isLastPage = false
     private var isFirstCallViewDidLayoutSubviews = true
+    
+    // MARK: - Life Cycle
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
@@ -37,6 +43,8 @@ final class DetailViewController: UIViewController {
         registerXib()
     }
     
+    // MARK: - IBActions
+    
     @IBAction private func closeButtonDidTap(_ sender: UIButton) {
         dismiss(animated: true, completion: nil)
         guard let indexPath = currentIndexPath,
@@ -45,6 +53,8 @@ final class DetailViewController: UIViewController {
         delegate?.send(photos: photos, pageNumber: page)
         delegate?.scrollToIndexPath(at: indexPath)
     }
+    
+    // MARK: - Methods
     
     private func registerXib() {
         let cellNibName = UINib(nibName: DetailCollectionViewCell.identifier,
@@ -65,6 +75,8 @@ final class DetailViewController: UIViewController {
     
 }
 
+// MARK: DataLoadable
+
 extension DetailViewController: DataLoadable {
     
     private func appendPhotos() {
@@ -83,6 +95,7 @@ extension DetailViewController: DataLoadable {
         }
     }
     
+    /// 받아온 photos 뿌려주고, pageNumber올리는 함수
     private func displayPhotos(_ photos: [Photo]) {
         self.photos?.append(contentsOf: photos)
         detailCollectionView.reloadData()
@@ -98,6 +111,8 @@ extension DetailViewController: DataLoadable {
     }
     
 }
+
+// MARK: UICollectionViewDataSource
 
 extension DetailViewController: UICollectionViewDataSource {
     
@@ -118,6 +133,8 @@ extension DetailViewController: UICollectionViewDataSource {
     }
     
 }
+
+// MARK: UICollectionViewDelegate
 
 extension DetailViewController: UICollectionViewDelegate {
     
@@ -141,12 +158,15 @@ extension DetailViewController: UICollectionViewDelegate {
         
         currentIndexPath = indexPath
         
+        // 바닥에 닿고, 이미 닿아있던 상태가 이나리면 appendPhotos()호출
         if indexPath.item == photos.count - 1 && !isLastPage {
             appendPhotos()
         }
     }
     
 }
+
+// MARK: UICollectionViewDelegateFlowLayout
 
 extension DetailViewController: UICollectionViewDelegateFlowLayout {
     

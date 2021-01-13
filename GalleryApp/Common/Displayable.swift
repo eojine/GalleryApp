@@ -20,6 +20,7 @@ extension Displayable {
                                            imageView: UIImageView,
                                            image: UIImage?) {
         if let image = image {
+            // 이미지가 있다면 이미지뷰에 이미지 넣고, stopAnimating
             imageView.transition(toImage: image)
             activityIndicator.isHidden = true
             activityIndicator.stopAnimating()

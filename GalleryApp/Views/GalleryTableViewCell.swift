@@ -11,9 +11,13 @@ final class GalleryTableViewCell: UITableViewCell, Displayable {
     
     static let identifier = String(describing: GalleryTableViewCell.self)
     
+    // MARK: - IBOutlets
+    
     @IBOutlet private weak var galleryImageView: UIImageView!
     @IBOutlet private weak var titleLabel: UILabel!
     @IBOutlet private weak var activityIndicator: UIActivityIndicatorView!
+    
+    // MARK: - Life Cycle
     
     override func prepareForReuse() {
         super.prepareForReuse()
@@ -25,6 +29,8 @@ final class GalleryTableViewCell: UITableViewCell, Displayable {
         super.awakeFromNib()
         displayLabelWithDropShadow(titleLabel: titleLabel)
     }
+    
+    // MARK: - Methods
     
     func configure(user: String?, photo: UIImage?) {
         DispatchQueue.main.async { [weak self] in

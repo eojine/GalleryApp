@@ -9,6 +9,7 @@ import UIKit
 
 extension UITableView {
     
+    /// TableView Bottom에 spinnerView생성하는 함수
     func spinnerView(display: Bool) {
         if display {
             self.createBottomSpinnerView()

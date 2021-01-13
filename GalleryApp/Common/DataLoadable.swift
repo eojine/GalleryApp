@@ -20,6 +20,7 @@ extension DataLoadable {
                               completion: @escaping (Result<[Photo], NetworkError>) -> ()) {
         switch search {
         case let .some(search) where !search.isEmpty:
+            // search text가 존재하고, 비어있는 String이 아니라면 SearchService실행
             SearchService.shared.get(page: pageNumber, search: search) { result in
                 switch result {
                 case .success(let result):
