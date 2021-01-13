@@ -63,6 +63,10 @@ final class ImageCacheService {
         
     }
     
+    func removeCache() {
+        cachedImages.removeAllObjects()
+    }
+    
     /// 이미지 캐시 체크
     private func chachedImage(url: NSString) -> UIImage? {
         return cachedImages.object(forKey: url)

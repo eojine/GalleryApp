@@ -40,6 +40,11 @@ final class GalleryViewController: UIViewController {
                                   forCellReuseIdentifier: GalleryTableViewCell.identifier)
     }
     
+    override func didReceiveMemoryWarning() {
+        super.didReceiveMemoryWarning()
+        ImageCacheService.shared.removeCache()
+    }
+    
 }
 
 // MARK: DataLoadable
