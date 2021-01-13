@@ -18,7 +18,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" dataMode="prototypes" style="plain" separatorStyle="none" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="kQd-1o-0b6">
-                                <rect key="frame" x="0.0" y="44" width="414" height="852"/>
+                                <rect key="frame" x="0.0" y="100" width="414" height="796"/>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <color key="sectionIndexBackgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <connections>
@@ -26,18 +26,35 @@
                                     <outlet property="delegate" destination="BYZ-38-t0r" id="BmQ-UP-g5W"/>
                                 </connections>
                             </tableView>
+                            <searchBar contentMode="redraw" barStyle="black" text="" placeholder="Search photos" showsCancelButton="YES" translatesAutoresizingMaskIntoConstraints="NO" id="y3x-ip-dzP">
+                                <rect key="frame" x="0.0" y="44" width="414" height="56"/>
+                                <color key="backgroundColor" white="0.33333333329999998" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <color key="barTintColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <textInputTraits key="textInputTraits" returnKeyType="search"/>
+                                <scopeButtonTitles>
+                                    <string>Title</string>
+                                    <string>Title</string>
+                                </scopeButtonTitles>
+                                <connections>
+                                    <outlet property="delegate" destination="BYZ-38-t0r" id="Srp-Zt-YLn"/>
+                                </connections>
+                            </searchBar>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                         <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
-                            <constraint firstItem="kQd-1o-0b6" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" id="4qv-DS-Pcc"/>
                             <constraint firstAttribute="bottom" secondItem="kQd-1o-0b6" secondAttribute="bottom" id="84Y-kz-00O"/>
                             <constraint firstItem="kQd-1o-0b6" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="AdM-WL-6we"/>
+                            <constraint firstItem="kQd-1o-0b6" firstAttribute="top" secondItem="y3x-ip-dzP" secondAttribute="bottom" id="b23-88-D0f"/>
+                            <constraint firstItem="y3x-ip-dzP" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" id="lrd-t7-CH9"/>
+                            <constraint firstItem="y3x-ip-dzP" firstAttribute="trailing" secondItem="6Tk-OE-BBY" secondAttribute="trailing" id="rGl-NU-oiD"/>
+                            <constraint firstItem="y3x-ip-dzP" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="udI-WX-Jzm"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="kQd-1o-0b6" secondAttribute="trailing" id="vXd-UY-OPO"/>
                         </constraints>
                     </view>
                     <connections>
                         <outlet property="galleryTableView" destination="kQd-1o-0b6" id="PWY-79-Red"/>
+                        <outlet property="searchBar" destination="y3x-ip-dzP" id="muC-bL-CbO"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>

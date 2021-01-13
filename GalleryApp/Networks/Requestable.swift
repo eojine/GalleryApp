@@ -32,7 +32,7 @@ extension Requestable {
             
             if error != nil {
                 completion(.failure(.failedRequest))
-                return
+                return 
             }
             
             guard let response = response as? HTTPURLResponse,
@@ -40,10 +40,6 @@ extension Requestable {
                 completion(.failure(.invalidResponse))
                 return
             }
-            
-//            if let links = response.allHeaderFields["Link"] as? String {
-//                print("링크", links)
-//            }
             
             guard let data = data else {
                 completion(.failure(.invalidData))

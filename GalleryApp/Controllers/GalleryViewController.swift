@@ -9,18 +9,29 @@ import UIKit
 
 final class GalleryViewController: UIViewController {
     
-    @IBOutlet private weak var galleryTableView: UITableView!
+    // MARK: - IBOutlets
     
-    private var reachedBottom = false
-    private var pageNumber = 1
+    @IBOutlet private weak var galleryTableView: UITableView!
+    @IBOutlet private weak var searchBar: UISearchBar!
+    
+    // MARK: - Properties
+    
     private var photos: [Photo] = []
     private var currentIndexPath: IndexPath?
+    private var pageNumber = 1
+    private var isSearching = false
+    private var fetchingMore = false
+    private var displayAlert = false
+    
+    // MARK: - Life Cycle
     
     override func viewDidLoad() {
         super.viewDidLoad()
         registerXib()
         appendPhotos()
     }
+    
+    // MARK: - Methods
     
     private func registerXib() {
         let cellNibName = UINib(nibName: GalleryTableViewCell.identifier,
@@ -29,31 +40,71 @@ final class GalleryViewController: UIViewController {
                                   forCellReuseIdentifier: GalleryTableViewCell.identifier)
     }
     
+    override func didReceiveMemoryWarning() {
+        super.didReceiveMemoryWarning()
+        ImageCacheService.shared.removeCache()
+    }
+    
+}
+
+// MARK: DataLoadable
+
+extension GalleryViewController: DataLoadable {
+    
     private func appendPhotos() {
-        loadPhotosFromServer(pageNumber: pageNumber) { photos in
-            DispatchQueue.main.async { [weak self] in
-                guard let self = self else { return }
-                self.photos.append(contentsOf: photos)
-                self.galleryTableView.reloadData()
-                self.reachedBottom = false
-                self.pageNumber += 1
-                self.spinnerView(display: false)
+        guard !fetchingMore else { return }
+        fetchingMore = true
+        galleryTableView.spinnerView(display: true)
+        
+        loadPhotosFromServer(pageNumber: pageNumber,
+                             search: isSearching ? searchBar.text : nil) { [weak self] result in
+            switch result {
+            case .success(let photos):
+                DispatchQueue.main.async {
+                    self?.displayPhotos(photos)
+                    self?.galleryTableView.spinnerView(display: false)
+                }
+            case .failure(let error):
+                DispatchQueue.main.async {
+                    self?.galleryTableView.isScrollEnabled = true
+                    self?.fetchingMore = false
+                    self?.galleryTableView.spinnerView(display: false)
+                }
+                self?.showErrorAlert(error: error)
             }
         }
     }
     
-    private func spinnerView(display: Bool) {
-        if display {
-            galleryTableView.createBottomSpinnerView()
-        } else {
-            galleryTableView.tableFooterView = nil
-        }
-        galleryTableView.isScrollEnabled = !display
+    /// 받아온 photos 뿌려주고, pageNumber올리는 함수
+    private func displayPhotos(_ photos: [Photo]) {
+        self.photos.append(contentsOf: photos)
+        galleryTableView.performBatchUpdates({
+            (self.photos.count - photos.count ..< self.photos.count).forEach { (row) in
+                self.galleryTableView.insertRows(at: [IndexPath(row: row,
+                                                                section: 0)],
+                                                 with: .automatic)
+            }
+        })
+        fetchingMore = false
+        pageNumber += 1
     }
 
+    /// Alert 띄우는 함수
+    private func showErrorAlert(error: NetworkError) {
+        if displayAlert { return }
+        displayAlert = true
+        DispatchQueue.main.async { [weak self] in
+            self?.showSimpleAlert(title: "Error!",
+                                  message: error.errorToString()) {
+                self?.displayAlert = false
+            }
+        }
+    }
+    
 }
 
 // MARK: UITableViewDataSource
+
 extension GalleryViewController: UITableViewDataSource {
     
     func tableView(_ tableView: UITableView,
@@ -62,6 +113,7 @@ extension GalleryViewController: UITableViewDataSource {
         guard let height = photos[indexPath.row].photoHeightForDevice(deviceWidth)
         else { return 0 }
         let cellHeight = CGFloat(height)
+        // 계산된 셀 높이 테이블 뷰 셀 높이로 지정
         return cellHeight
     }
     
@@ -83,7 +135,8 @@ extension GalleryViewController: UITableViewDataSource {
 }
 
 // MARK: UITableViewDelegate
-extension GalleryViewController: UITableViewDelegate, ImageLoadable {
+
+extension GalleryViewController: UITableViewDelegate {
     
     func tableView(_ tableView: UITableView,
                    didSelectRowAt indexPath: IndexPath) {
@@ -91,11 +144,15 @@ extension GalleryViewController: UITableViewDelegate, ImageLoadable {
                 .instantiateViewController(withIdentifier: DetailViewController.identifier)
                 as? DetailViewController
         else { return }
-        detailViewController.modalPresentationStyle = .fullScreen
+        
+        // detailViewController에 필요한 data 주입
+        detailViewController.searchText = isSearching ? searchBar.text : nil
         detailViewController.photos = photos
         detailViewController.pageNumber = pageNumber
         detailViewController.currentIndexPath = indexPath
         detailViewController.delegate = self
+        detailViewController.modalPresentationStyle = .fullScreen
+        
         present(detailViewController, animated: true)
     }
     
@@ -107,39 +164,65 @@ extension GalleryViewController: UITableViewDelegate, ImageLoadable {
               let url = photos[indexPath.row].urls?.regular
         else { return }
         
-        loadImageFromURL(url: url) { (image) in
-            cell.configure(user: user, photo: image)
+        ImageCacheService.shared.load(url: url) { result in
+            switch result {
+            case .success(let image):
+                cell.configure(user: user, photo: image)
+            default:
+                break
+            }
         }
-    }
-    
-    func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        if reachedBottom { return }
         
-        let height = scrollView.frame.size.height
-        let contentYOffset = scrollView.contentOffset.y
-        let scrollViewHeight = scrollView.contentSize.height
-        let distanceFromBottom = scrollViewHeight - contentYOffset
-        
-        if distanceFromBottom < height {
-            reachedBottom = true
-            spinnerView(display: true)
+        if isBottom(indexPath, photos) {
             appendPhotos()
         }
     }
+    
+    private func isBottom(_ indexPath: IndexPath,
+                          _ photos: [Photo])  -> Bool {
+        return indexPath.row + 1 == photos.count
+    }
+    
+}
 
+extension GalleryViewController: UISearchBarDelegate {
+    
+    /// 취소 버튼이 클릭됐을때 함수
+    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
+        searchBar.text = ""
+        isSearching = false
+        displaySearchPhotos()
+    }
+    
+    /// Search 버튼이 클릭됐을때 함수
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        isSearching = true
+        displaySearchPhotos()
+    }
+    
+    /// Search하기 전에 tableview 비우고, appendPhotos()하는 함수
+    private func displaySearchPhotos() {
+        photos.removeAll()
+        pageNumber = 1
+        galleryTableView.reloadData()
+        appendPhotos()
+        searchBar.resignFirstResponder()
+    }
+    
 }
 
 extension GalleryViewController: SendDataDelegate {
     
+    /// DetailViewController에서 바뀐 데이터를 받아와서 GalleryViewController에 넣는 함수
     func send(photos: [Photo], pageNumber: Int) {
         self.photos = photos
         self.pageNumber = pageNumber
         galleryTableView.reloadData()
     }
     
+    /// DetailViewController의 indexPath 를 GalleryViewController에 넣고, Scroll하는 함수
     func scrollToIndexPath(at: IndexPath) {
         currentIndexPath = at
-        reachedBottom = true
         galleryTableView.scrollToRow(at: at,
                                      at: .middle,
                                      animated: false)

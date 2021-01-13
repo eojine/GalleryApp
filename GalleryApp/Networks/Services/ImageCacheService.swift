@@ -12,6 +12,7 @@ final class ImageCacheService {
     
     static let shared = ImageCacheService()
     private let cachedImages = NSCache<NSString, UIImage>()
+    private init() { }
     
     func load(url: String,
               completion: @escaping (Result<UIImage, NetworkError>) -> ()) {
@@ -33,6 +34,12 @@ final class ImageCacheService {
                 return
             }
             
+            guard let response = response as? HTTPURLResponse,
+                  (200...299).contains(response.statusCode) else {
+                completion(.failure(.invalidResponse))
+                return
+            }
+            
             guard let data = data else {
                 completion(.failure(.invalidData))
                 return
@@ -47,6 +54,10 @@ final class ImageCacheService {
             completion(.success(image))
         }.resume()
         
+    }
+    
+    func removeCache() {
+        cachedImages.removeAllObjects()
     }
     
     /// 이미지 캐시 체크

@@ -16,13 +16,23 @@ final class DetailViewController: UIViewController {
     
     static let identifier = String(describing: DetailViewController.self)
     
+    // MARK: - IBOutlets
+    
     @IBOutlet private weak var detailCollectionView: UICollectionView!
     
-    var photos: [Photo]?
-    var pageNumber: Int?
-    var currentIndexPath: IndexPath?
-    var isFirstCallViewDidLayoutSubviews = true
+    // MARK: - Properties
+    
     weak var delegate: SendDataDelegate?
+    var photos: [Photo]?
+    var currentIndexPath: IndexPath?
+    var pageNumber: Int?
+    var searchText: String?
+    
+    private var isLastPage = false
+    private var displayAlert = false
+    private var isFirstCallViewDidLayoutSubviews = true
+    
+    // MARK: - Life Cycle
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
@@ -34,14 +44,18 @@ final class DetailViewController: UIViewController {
         registerXib()
     }
     
+    // MARK: - IBActions
+    
     @IBAction private func closeButtonDidTap(_ sender: UIButton) {
         dismiss(animated: true, completion: nil)
         guard let indexPath = currentIndexPath,
               let photos = photos,
-              let page = pageNumber else{ return }
+              let page = pageNumber else { return }
         delegate?.send(photos: photos, pageNumber: page)
         delegate?.scrollToIndexPath(at: indexPath)
     }
+    
+    // MARK: - Methods
     
     private func registerXib() {
         let cellNibName = UINib(nibName: DetailCollectionViewCell.identifier,
@@ -61,6 +75,49 @@ final class DetailViewController: UIViewController {
     }
     
 }
+
+// MARK: DataLoadable
+
+extension DetailViewController: DataLoadable {
+    
+    private func appendPhotos() {
+        guard let pageNumber = pageNumber else { return }
+        loadPhotosFromServer(pageNumber: pageNumber,
+                             search: searchText) { [weak self] result in
+            switch result {
+            case .success(let photos):
+                DispatchQueue.main.async {
+                    self?.displayPhotos(photos)
+                }
+            case .failure(let error):
+                self?.isLastPage = true
+                DispatchQueue.main.async {
+                    self?.showErrorAlert(error: error)
+                }
+            }
+        }
+    }
+    
+    /// 받아온 photos 뿌려주고, pageNumber올리는 함수
+    private func displayPhotos(_ photos: [Photo]) {
+        self.photos?.append(contentsOf: photos)
+        detailCollectionView.reloadData()
+        pageNumber? += 1
+        isLastPage = false
+    }
+    
+    private func showErrorAlert(error: NetworkError) {
+        if displayAlert { return }
+        displayAlert = true
+        showSimpleAlert(title: "Error!",
+                        message: error.errorToString()) { [weak self] in
+            self?.displayAlert = false
+        }
+    }
+    
+}
+
+// MARK: UICollectionViewDataSource
 
 extension DetailViewController: UICollectionViewDataSource {
     
@@ -82,7 +139,9 @@ extension DetailViewController: UICollectionViewDataSource {
     
 }
 
-extension DetailViewController: UICollectionViewDelegate, ImageLoadable {
+// MARK: UICollectionViewDelegate
+
+extension DetailViewController: UICollectionViewDelegate {
     
     func collectionView(_ collectionView: UICollectionView,
                         willDisplay cell: UICollectionViewCell,
@@ -90,29 +149,33 @@ extension DetailViewController: UICollectionViewDelegate, ImageLoadable {
         guard let cell = cell as? DetailCollectionViewCell,
               let photos = photos,
               let user = photos[indexPath.item].user?.name,
-              let url = photos[indexPath.item].urls?.regular,
-              let pageNumber = pageNumber
+              let url = photos[indexPath.item].urls?.regular
         else { return }
         
-        if indexPath.item == photos.count - 1 {
-            loadPhotosFromServer(pageNumber: pageNumber) { (photos) in
-                DispatchQueue.main.async { [weak self] in
-                    guard let self = self else { return }
-                    self.photos?.append(contentsOf: photos)
-                    self.detailCollectionView.reloadData()
-                    self.pageNumber? += 1
-                }
+        ImageCacheService.shared.load(url: url) { result in
+            switch result {
+            case .success(let image):
+                cell.configure(user: user, photo: image)
+            default:
+                break
             }
         }
         
-        loadImageFromURL(url: url) { (image) in
-            cell.configure(user: user, photo: image)
-        }
-        
         currentIndexPath = indexPath
+        
+        if isBottom(indexPath, photos) {
+            appendPhotos()
+        }
+    }
+    
+    private func isBottom(_ indexPath: IndexPath,
+                          _ photos: [Photo])  -> Bool {
+        return indexPath.item + 1 == photos.count && !isLastPage
     }
     
 }
+
+// MARK: UICollectionViewDelegateFlowLayout
 
 extension DetailViewController: UICollectionViewDelegateFlowLayout {
     

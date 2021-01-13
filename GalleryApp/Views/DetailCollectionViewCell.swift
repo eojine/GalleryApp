@@ -7,13 +7,17 @@
 
 import UIKit
 
-final class DetailCollectionViewCell: UICollectionViewCell {
-
+final class DetailCollectionViewCell: UICollectionViewCell, Displayable {
+    
     static let identifier = String(describing: DetailCollectionViewCell.self)
+    
+    // MARK: - IBOutlets
     
     @IBOutlet private weak var titleLabel: UILabel!
     @IBOutlet private weak var detailImageView: UIImageView!
     @IBOutlet private weak var activityIndicator: UIActivityIndicatorView!
+    
+    // MARK: - Life Cycle
     
     override func prepareForReuse() {
         super.prepareForReuse()
@@ -23,32 +27,19 @@ final class DetailCollectionViewCell: UICollectionViewCell {
     
     override func awakeFromNib() {
         super.awakeFromNib()
-        displayLabelWithDropShadow()
+        displayLabelWithDropShadow(titleLabel: titleLabel)
     }
-
+    
+    // MARK: - Methods
+    
     func configure(user: String?, photo: UIImage?) {
         DispatchQueue.main.async { [weak self] in
-            self?.titleLabel.text = user
-            self?.displayImageWithActivityIndicator(photo)
+            guard let self = self else { return }
+            self.titleLabel.text = user
+            self.displayImageWithActivityIndicator(activityIndicator: self.activityIndicator,
+                                                   imageView: self.detailImageView,
+                                                   image: photo)
         }
-    }
-    
-    private func displayImageWithActivityIndicator(_ image: UIImage?) {
-        if let image = image {
-            detailImageView.transition(toImage: image)
-            activityIndicator.isHidden = true
-            activityIndicator.stopAnimating()
-        } else {
-            activityIndicator.isHidden = false
-            activityIndicator.startAnimating()
-            detailImageView.image = .none
-        }
-    }
-    
-    private func displayLabelWithDropShadow() {
-        titleLabel.dropShadow(radius: 5.0,
-                              opacity: 0.4,
-                              offset: CGSize(width: 2, height: 2))
     }
     
 }
