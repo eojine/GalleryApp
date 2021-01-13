@@ -9,7 +9,7 @@
 2. 메인 상세화면
 3. 메인 상세에서 껐을때 뷰 중앙에 오도록 함
 
-<img src="https://user-images.githubusercontent.com/26567846/104451734-4cd79280-55e5-11eb-9779-afb163a2abca.PNG" width="30%"><img src="https://user-images.githubusercontent.com/26567846/104451729-4a753880-55e5-11eb-8b59-19dd75c37915.PNG" width="30%"><img src="https://user-images.githubusercontent.com/26567846/104451719-46e1b180-55e5-11eb-9fa3-6288657d7e21.PNG" width="30%">
+<img src="https://user-images.githubusercontent.com/26567846/104451734-4cd79280-55e5-11eb-9779-afb163a2abca.PNG" width="30%"> <img src="https://user-images.githubusercontent.com/26567846/104451729-4a753880-55e5-11eb-8b59-19dd75c37915.PNG" width="30%"> <img src="https://user-images.githubusercontent.com/26567846/104451719-46e1b180-55e5-11eb-9fa3-6288657d7e21.PNG" width="30%">
 
 ## 검색
 
@@ -17,7 +17,7 @@
 2. Search화면에서 상세화면 눌렀을 때
 3. Search중일때
 
-<img src="https://user-images.githubusercontent.com/26567846/104451638-2c0f3d00-55e5-11eb-9c1f-df9eefdbad7d.PNG" width="30%"> <img src="https://user-images.githubusercontent.com/26567846/104451661-33cee180-55e5-11eb-99d7-0c23d35e6c9f.PNG" width="30%"><img src="https://user-images.githubusercontent.com/26567846/104451667-35000e80-55e5-11eb-92b5-b23e36b49f15.PNG" width="30%">
+<img src="https://user-images.githubusercontent.com/26567846/104451638-2c0f3d00-55e5-11eb-9c1f-df9eefdbad7d.PNG" width="30%"> <img src="https://user-images.githubusercontent.com/26567846/104451661-33cee180-55e5-11eb-99d7-0c23d35e6c9f.PNG" width="30%"> <img src="https://user-images.githubusercontent.com/26567846/104451667-35000e80-55e5-11eb-92b5-b23e36b49f15.PNG" width="30%">
 
 
 
